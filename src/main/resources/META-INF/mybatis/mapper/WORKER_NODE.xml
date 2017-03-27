@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baidu.fsg.uid.worker.dao.WorkerNodeDAO">
+	<resultMap id="workerNodeRes"
+			   type="com.baidu.fsg.uid.worker.entity.WorkerNodeEntity">
+		<id column="ID" jdbcType="BIGINT" property="id" />
+		<result column="HOST_NAME" jdbcType="VARCHAR" property="hostName" />
+		<result column="PORT" jdbcType="VARCHAR" property="port" />
+		<result column="TYPE" jdbcType="INTEGER" property="type" />
+		<result column="LAUNCH_DATE" jdbcType="DATE" property="launchDate" />
+		<result column="MODIFIED" jdbcType="TIMESTAMP" property="modified" />
+		<result column="CREATED" jdbcType="TIMESTAMP" property="created" />
+	</resultMap>
+
+	<insert id="addWorkerNode" useGeneratedKeys="true" keyProperty="id"
+		parameterType="com.baidu.fsg.uid.worker.entity.WorkerNodeEntity">
+		INSERT INTO WORKER_NODE
+		(HOST_NAME,
+		PORT,
+		TYPE,
+		LAUNCH_DATE,
+		MODIFIED,
+		CREATED)
+		VALUES (
+		#{hostName},
+		#{port},
+		#{type},
+		#{launchDate},
+		NOW(),
+		NOW())
+	</insert>
+
+	<select id="getWorkerNodeByHostPort" resultMap="workerNodeRes">
+		SELECT
+		ID,
+		HOST_NAME,
+		PORT,
+		TYPE,
+		LAUNCH_DATE,
+		MODIFIED,
+		CREATED
+		FROM
+		WORKER_NODE
+		WHERE
+		HOST_NAME = #{host} AND PORT = #{port}
+	</select>
+</mapper>

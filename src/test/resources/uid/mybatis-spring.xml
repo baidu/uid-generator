@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.1.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd">
+
+	<!-- 确保可在@Value中, 使用SeEL表达式获取资源属性 -->
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="properties" ref="configProperties" />
+	</bean>
+
+	<bean id="configProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="locations">
+			<list>
+				<value>classpath:/uid/*.properties</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- Spring annotation扫描 -->
+	<context:component-scan base-package="com.baidu.fsg.uid" />
+
+	<!-- 创建SqlSessionFactory，同时指定数据源 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="mapperLocations" value="classpath:/META-INF/mybatis/mapper/WORKER*.xml" />
+	</bean>
+
+	<!-- 事务相关配置 -->
+	<tx:annotation-driven transaction-manager="transactionManager" order="1" />
+
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<!-- Mybatis Mapper扫描 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="annotationClass" value="org.springframework.stereotype.Repository" />
+		<property name="basePackage" value="com.baidu.fsg.uid.worker.dao" />
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+	</bean>
+
+	<!-- 数据源配置 -->
+	<bean id="dataSource" parent="abstractDataSource">
+		<property name="driverClassName" value="${mysql.driver}" />
+		<property name="maxActive" value="${jdbc.maxActive}" />
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+	</bean>
+
+	<bean id="abstractDataSource" class="com.alibaba.druid.pool.DruidDataSource" destroy-method="close">
+		<property name="filters" value="${datasource.filters}" />
+		<property name="defaultAutoCommit" value="${datasource.defaultAutoCommit}" />
+		<property name="initialSize" value="${datasource.initialSize}" />
+		<property name="minIdle" value="${datasource.minIdle}" />
+		<property name="maxWait" value="${datasource.maxWait}" />
+		<property name="testWhileIdle" value="${datasource.testWhileIdle}" />
+		<property name="testOnBorrow" value="${datasource.testOnBorrow}" />
+		<property name="testOnReturn" value="${datasource.testOnReturn}" />
+		<property name="validationQuery" value="${datasource.validationQuery}" />
+		<property name="timeBetweenEvictionRunsMillis" value="${datasource.timeBetweenEvictionRunsMillis}" />
+		<property name="minEvictableIdleTimeMillis" value="${datasource.minEvictableIdleTimeMillis}" />
+		<property name="logAbandoned" value="${datasource.logAbandoned}" />
+		<property name="removeAbandoned" value="${datasource.removeAbandoned}" />
+		<property name="removeAbandonedTimeout" value="${datasource.removeAbandonedTimeout}" />
+	</bean>
+
+	<bean id="batchSqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="sqlSessionFactory" />
+		<constructor-arg index="1" value="BATCH" />
+	</bean>
+	
+
+</beans>
