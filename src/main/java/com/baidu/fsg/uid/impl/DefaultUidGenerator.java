@@ -92,7 +92,7 @@ public class DefaultUidGenerator implements UidGenerator, InitializingBean {
             throw new RuntimeException("Worker id " + workerId + " exceeds the max " + bitsAllocator.getMaxWorkerId());
         }
 
-        LOGGER.info("Initialized bits(1, {}, {}, {}) for workerID:{}", workerBits, workerBits, seqBits, workerId);
+        LOGGER.info("Initialized bits(1, {}, {}, {}) for workerID:{}", timeBits, workerBits, seqBits, workerId);
     }
 
     @Override
