@@ -87,10 +87,7 @@ public class DefaultUidGenerator implements UidGenerator, InitializingBean {
         bitsAllocator = new BitsAllocator(timeBits, workerBits, seqBits);
 
         // initialize worker id
-        workerId = workerIdAssigner.assignWorkerId();
-        if (workerId > bitsAllocator.getMaxWorkerId()) {
-            throw new RuntimeException("Worker id " + workerId + " exceeds the max " + bitsAllocator.getMaxWorkerId());
-        }
+        assignWorkerId();
 
         LOGGER.info("Initialized bits(1, {}, {}, {}) for workerID:{}", timeBits, workerBits, seqBits, workerId);
     }
@@ -138,7 +135,23 @@ public class DefaultUidGenerator implements UidGenerator, InitializingBean {
         // Clock moved backwards, refuse to generate uid
         if (currentSecond < lastSecond) {
             long refusedSeconds = lastSecond - currentSecond;
-            throw new UidGenerateException("Clock moved backwards. Refusing for %d seconds", refusedSeconds);
+            LOGGER.warn("Clock moved backwards. Refusing for {} seconds", refusedSeconds);
+        	if (refusedSeconds <= 5) {
+                try {
+                	//时间偏差大小小于5ms，则等待两倍时间
+					wait(refusedSeconds << 1);//wait
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+                currentSecond = getCurrentSecond();
+                if (currentSecond < lastSecond) {//时钟回拨较大
+                	//获取新的workerId
+                	assignWorkerId();
+                }
+        	}else {//时钟回拨较大
+            	//获取新的workerId
+            	assignWorkerId();
+        	}
         }
 
         // At the same second, increase sequence
@@ -182,6 +195,17 @@ public class DefaultUidGenerator implements UidGenerator, InitializingBean {
         }
 
         return currentSecond;
+    }
+    
+    /**
+     * initialize worker id
+     */
+    private void assignWorkerId() {
+        // initialize worker id
+        workerId = workerIdAssigner.assignWorkerId();
+        if (workerId > bitsAllocator.getMaxWorkerId()) {
+            throw new RuntimeException("Worker id " + workerId + " exceeds the max " + bitsAllocator.getMaxWorkerId());
+        }
     }
 
     /**
