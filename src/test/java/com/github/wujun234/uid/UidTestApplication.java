@@ -16,10 +16,4 @@ public class UidTestApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(UidTestApplication.class, args);
 	}
-	
-//    @Bean
-//    @ConditionalOnMissingBean
-//    WorkerIdAssigner workerIdAssigner() {
-//        return new DisposableWorkerIdAssigner();
-//    }
 }

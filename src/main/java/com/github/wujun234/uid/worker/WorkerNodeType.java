@@ -21,12 +21,23 @@ import com.github.wujun234.uid.utils.ValuedEnum;
  * WorkerNodeType
  * <li>CONTAINER: Such as Docker
  * <li>ACTUAL: Actual machine
- * 
+ *
  * @author yutianbao
  */
 public enum WorkerNodeType implements ValuedEnum<Integer> {
 
-    CONTAINER(1), ACTUAL(2), FAKE(3);
+    /**
+     * 容器
+     */
+    CONTAINER(1),
+    /**
+     * 物理机
+     */
+    ACTUAL(2),
+    /**
+     * 虚拟
+     */
+    FAKE(3);
 
     /**
      * Lock type

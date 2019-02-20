@@ -40,7 +40,8 @@ public class BufferPaddingExecutor {
     /** Constants */
     private static final String WORKER_NAME = "RingBuffer-Padding-Worker";
     private static final String SCHEDULE_NAME = "RingBuffer-Padding-Schedule";
-    private static final long DEFAULT_SCHEDULE_INTERVAL = 5 * 60L; // 5 minutes
+    /** 5 minutes */
+    private static final long DEFAULT_SCHEDULE_INTERVAL = 5 * 60L;
     
     /** Whether buffer padding is running */
     private final AtomicBoolean running;

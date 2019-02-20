@@ -45,7 +45,7 @@ public class DisposableWorkerIdAssigner implements WorkerIdAssigner {
      * 
      * @return assigned worker id
      */
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public long assignWorkerId() {
         // build worker node entity
@@ -58,7 +58,7 @@ public class DisposableWorkerIdAssigner implements WorkerIdAssigner {
         return workerNodeEntity.getId();
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public long assignFakeWorkerId() {
         return buildFakeWorkerNode().getId();

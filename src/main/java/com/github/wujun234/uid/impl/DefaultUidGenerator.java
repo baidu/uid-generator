@@ -152,7 +152,7 @@ public class DefaultUidGenerator implements UidGenerator, InitializingBean {
                     }
                 } else {
                     workerId = workerIdAssigner.assignFakeWorkerId();
-                    LOGGER.error("Clock moved backwards. Assign New WorkerId %d", workerId);
+                    LOGGER.error("Clock moved backwards. Assigned New WorkerId %d", workerId);
                     if (workerId > bitsAllocator.getMaxWorkerId()) {
                         LOGGER.error("Worker id " + workerId + " exceeds the max " + bitsAllocator.getMaxWorkerId());
                         workerId = workerId % bitsAllocator.getMaxWorkerId();
