@@ -49,7 +49,7 @@ PRIMARY KEY(ID)
 <dependency>
     <groupId>com.github.wujun234</groupId>
     <artifactId>uid-generator-spring-boot-starter</artifactId>
-    <version>1.0.1.RELEASE</version>
+    <version>1.0.2.RELEASE</version>
 </dependency>
 ```
 ### 步骤3: 开始使用
