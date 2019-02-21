@@ -1,7 +1,7 @@
 uid-generator-spring-boot-starter
 ==========================
 基于 [百度UidGenerator](https://github.com/baidu/uid-generator), 做了以下改动：
-- 改造为spring-boot-starter的形式，建表、引入，即可使用
+- 改造为spring-boot-starter的形式，不用部署为分布式，直接建表、在项目中引入，即可使用
 - 针对时钟回拨，提供了修正选项（默认启用，可通过配置关闭），小于阈值直接休眠，大于阈值更改机器号
 - 对机器id用尽提供了复用策略：取余
 - 解除id位数限制，由“必须64位”改为“不大于64位”，可根据需要获取更短id
