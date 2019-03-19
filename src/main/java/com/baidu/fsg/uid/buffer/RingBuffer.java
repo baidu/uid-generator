@@ -166,9 +166,16 @@ public class RingBuffer {
 
         // cursor catch the tail, means that there is no more available UID to take
         if (nextCursor == currentCursor) {
-            rejectedTakeHandler.rejectTakeBuffer(this);
-        }
+            Boolean running = false;
+            while (!running) {
+                running = bufferPaddingExecutor.booleanPaddingBuffer();
+            }
+            nextCursor = cursor.updateAndGet(old -> old == tail.get() ? old : old + 1);
 
+            if (nextCursor == currentCursor) {
+                rejectedTakeHandler.rejectTakeBuffer(this);
+            }
+        }
         // 1. check next slot flag is CAN_TAKE_FLAG
         int nextCursorIndex = calSlotIndex(nextCursor);
         Assert.isTrue(flags[nextCursorIndex].get() == CAN_TAKE_FLAG, "Curosr not in can take status");

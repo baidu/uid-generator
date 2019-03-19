@@ -147,6 +147,27 @@ public class BufferPaddingExecutor {
         }
 
         // fill the rest slots until to catch the cursor
+        putBuffer();
+    }
+    /**
+     * Padding buffer fill the slots until to catch the cursor
+     */
+    public Boolean booleanPaddingBuffer() {
+        LOGGER.info("Ready to padding buffer lastSecond:{}. {}", lastSecond.get(), ringBuffer);
+
+        // is still running
+        if (!running.compareAndSet(false, true)) {
+            LOGGER.info("Padding buffer is still running. {}", ringBuffer);
+            return false;
+        }
+
+        // fill the rest slots until to catch the cursor
+        putBuffer();
+        return  true;
+    }
+
+    private void putBuffer() {
+
         boolean isFullRingBuffer = false;
         while (!isFullRingBuffer) {
             List<Long> uidList = uidProvider.provide(lastSecond.incrementAndGet());
