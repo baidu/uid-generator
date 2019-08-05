@@ -32,7 +32,7 @@ import com.baidu.fsg.uid.worker.WorkerIdAssigner;
 /**
  * Represents an implementation of {@link UidGenerator}
  *
- * The unique id has 64bits (long), default allocated as blow:<br>
+ * The unique id has 64bits (long), default allocated as below:<br>
  * <li>sign: The highest bit is 0
  * <li>delta seconds: The next 28 bits, represents delta seconds since a customer epoch(2016-05-20 00:00:00.000).
  *                    Supports about 8.7 years until to 2024-11-20 21:24:16
