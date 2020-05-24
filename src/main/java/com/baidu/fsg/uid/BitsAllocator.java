@@ -86,7 +86,7 @@ public class BitsAllocator {
      * @return
      */
     public long allocate(long deltaSeconds, long workerId, long sequence) {
-        return (deltaSeconds << timestampShift) | (workerId << workerIdShift) | sequence;
+        return (deltaSeconds << timestampShift) | ( (workerId%(  (~(-1L << workerIdBits)) )) << workerIdShift) | sequence;
     }
     
     /**
