@@ -200,11 +200,11 @@ public class RingBuffer {
     }
     
     /**
-     * Policy for {@link RejectedTakeBufferHandler}, throws {@link RuntimeException} after logging 
+     * Policy for {@link RejectedTakeBufferHandler}, throws {@link IllegalStateException} after logging
      */
     protected void exceptionRejectedTakeBuffer(RingBuffer ringBuffer) {
         LOGGER.warn("Rejected take buffer. {}", ringBuffer);
-        throw new RuntimeException("Rejected take buffer. " + ringBuffer);
+        throw new IllegalStateException("Rejected take buffer. " + ringBuffer);
     }
     
     /**

@@ -74,8 +74,8 @@ public class NamingThreadFactory implements ThreadFactory {
     }
 
     @Override
-    public Thread newThread(Runnable runnable) {
-        Thread thread = new Thread(runnable);
+    public Thread newThread(Runnable r) {
+        Thread thread = new Thread(r);
         thread.setDaemon(this.daemon);
 
         // If there is no specified name for thread, it will auto detect using the invoker classname instead.
@@ -109,9 +109,9 @@ public class NamingThreadFactory implements ThreadFactory {
      */
     private String getInvoker(int depth) {
         Exception e = new Exception();
-        StackTraceElement[] stackTraceElements = e.getStackTrace();
-        if (stackTraceElements.length > depth) {
-            return ClassUtils.getShortClassName(stackTraceElements[depth].getClassName());
+        StackTraceElement[] stes = e.getStackTrace();
+        if (stes.length > depth) {
+            return ClassUtils.getShortClassName(stes[depth].getClassName());
         }
         return getClass().getSimpleName();
     }
@@ -123,16 +123,16 @@ public class NamingThreadFactory implements ThreadFactory {
      * @return
      */
     private long getSequence(String invoker) {
-        AtomicLong value = this.sequences.get(invoker);
-        if (value == null) {
-            value = new AtomicLong(0);
-            AtomicLong previous = this.sequences.putIfAbsent(invoker, value);
+        AtomicLong r = this.sequences.get(invoker);
+        if (r == null) {
+            r = new AtomicLong(0);
+            AtomicLong previous = this.sequences.putIfAbsent(invoker, r);
             if (previous != null) {
-                value = previous;
+                r = previous;
             }
         }
 
-        return value.incrementAndGet();
+        return r.incrementAndGet();
     }
 
     /**

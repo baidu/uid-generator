@@ -62,13 +62,13 @@ public abstract class DateUtils extends org.apache.commons.lang3.time.DateUtils 
      * @param str
      * @param pattern
      * @return
-     * @throws RuntimeException when ParseException occurred
+     * @throws IllegalArgumentException when ParseException occurred
      */
     public static Date parseDate(String str, String pattern) {
         try {
             return parseDate(str, new String[]{pattern});
         } catch (ParseException e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException("invalid pattern", e);
         }
     }
 

@@ -35,8 +35,8 @@ public abstract class NetUtils {
     static {
         try {
             localAddress = getLocalInetAddress();
-        } catch (SocketException e) {
-            throw new IllegalArgumentException("fail to get local ip.", e);
+        } catch (SocketException | IllegalArgumentException e) {
+            throw new IllegalArgumentException("failed to get local ip.", e);
         }
     }
 
@@ -45,6 +45,7 @@ public abstract class NetUtils {
      *
      * @return the local address
      * @throws SocketException the socket exception
+     * @throws IllegalArgumentException no valid local address found
      */
     public static InetAddress getLocalInetAddress() throws SocketException {
         // enumerates all network interfaces
@@ -69,7 +70,7 @@ public abstract class NetUtils {
             }
         }
 
-        throw new RuntimeException("No validated local address!");
+        throw new IllegalArgumentException("No validated local address!");
     }
 
     /**
