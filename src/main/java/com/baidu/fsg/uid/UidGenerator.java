@@ -30,7 +30,7 @@ public interface UidGenerator {
      * @return UID
      * @throws UidGenerateException
      */
-    long getUID() throws UidGenerateException;
+    long getUID();
 
     /**
      * Parse the UID into elements which are used to generate the UID. <br>

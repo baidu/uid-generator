@@ -19,7 +19,7 @@ import com.baidu.fsg.uid.utils.DockerUtils;
 import com.baidu.fsg.uid.utils.NetUtils;
 import com.baidu.fsg.uid.worker.dao.WorkerNodeDAO;
 import com.baidu.fsg.uid.worker.entity.WorkerNodeEntity;
-import org.apache.commons.lang.math.RandomUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +46,7 @@ public class DisposableWorkerIdAssigner implements WorkerIdAssigner {
      * @return assigned worker id
      */
     @Transactional
+    @Override
     public long assignWorkerId() {
         // build worker node entity
         WorkerNodeEntity workerNodeEntity = buildWorkerNode();
@@ -70,7 +71,7 @@ public class DisposableWorkerIdAssigner implements WorkerIdAssigner {
         } else {
             workerNodeEntity.setType(WorkerNodeType.ACTUAL.value());
             workerNodeEntity.setHostName(NetUtils.getLocalAddress());
-            workerNodeEntity.setPort(System.currentTimeMillis() + "-" + RandomUtils.nextInt(100000));
+            workerNodeEntity.setPort(System.currentTimeMillis() + "-" + RandomUtils.nextInt(0, 100000));
         }
 
         return workerNodeEntity;

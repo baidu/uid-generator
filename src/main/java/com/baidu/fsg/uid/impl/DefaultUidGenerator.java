@@ -18,7 +18,7 @@ package com.baidu.fsg.uid.impl;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -75,31 +75,31 @@ public class DefaultUidGenerator implements UidGenerator, InitializingBean {
     protected long workerId;
 
     /** Volatile fields caused by nextId() */
-    protected long sequence = 0L;
+    protected long sequence; // 0L
     protected long lastSecond = -1L;
 
     /** Spring property */
     protected WorkerIdAssigner workerIdAssigner;
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         // initialize bits allocator
         bitsAllocator = new BitsAllocator(timeBits, workerBits, seqBits);
 
         // initialize worker id
         workerId = workerIdAssigner.assignWorkerId();
         if (workerId > bitsAllocator.getMaxWorkerId()) {
-            throw new RuntimeException("Worker id " + workerId + " exceeds the max " + bitsAllocator.getMaxWorkerId());
+            throw new IllegalStateException("Worker id " + workerId + " exceeds the max " + bitsAllocator.getMaxWorkerId());
         }
 
         LOGGER.info("Initialized bits(1, {}, {}, {}) for workerID:{}", timeBits, workerBits, seqBits, workerId);
     }
 
     @Override
-    public long getUID() throws UidGenerateException {
+    public long getUID() {
         try {
             return nextId();
-        } catch (Exception e) {
+        } catch (UidGenerateException e) {
             LOGGER.error("Generate unique id exception. ", e);
             throw new UidGenerateException(e);
         }
@@ -132,32 +132,34 @@ public class DefaultUidGenerator implements UidGenerator, InitializingBean {
      * @return UID
      * @throws UidGenerateException in the case: Clock moved backwards; Exceeds the max timestamp
      */
-    protected synchronized long nextId() {
-        long currentSecond = getCurrentSecond();
+    protected long nextId() {
+        synchronized (this) {
+            long currentSecond = getCurrentSecond();
 
-        // Clock moved backwards, refuse to generate uid
-        if (currentSecond < lastSecond) {
-            long refusedSeconds = lastSecond - currentSecond;
-            throw new UidGenerateException("Clock moved backwards. Refusing for %d seconds", refusedSeconds);
-        }
-
-        // At the same second, increase sequence
-        if (currentSecond == lastSecond) {
-            sequence = (sequence + 1) & bitsAllocator.getMaxSequence();
-            // Exceed the max sequence, we wait the next second to generate uid
-            if (sequence == 0) {
-                currentSecond = getNextSecond(lastSecond);
+            // Clock moved backwards, refuse to generate uid
+            if (currentSecond < lastSecond) {
+                long refusedSeconds = lastSecond - currentSecond;
+                throw new UidGenerateException("Clock moved backwards. Refusing for %d seconds", refusedSeconds);
             }
 
-        // At the different second, sequence restart from zero
-        } else {
-            sequence = 0L;
+            // At the same second, increase sequence
+            if (currentSecond == lastSecond) {
+                sequence = (sequence + 1) & bitsAllocator.getMaxSequence();
+                // Exceed the max sequence, we wait the next second to generate uid
+                if (sequence == 0) {
+                    currentSecond = getNextSecond(lastSecond);
+                }
+
+                // At the different second, sequence restart from zero
+            } else {
+                sequence = 0L;
+            }
+
+            lastSecond = currentSecond;
+
+            // Allocate bits for UID
+            return bitsAllocator.allocate(currentSecond - epochSeconds, workerId, sequence);
         }
-
-        lastSecond = currentSecond;
-
-        // Allocate bits for UID
-        return bitsAllocator.allocate(currentSecond - epochSeconds, workerId, sequence);
     }
 
     /**

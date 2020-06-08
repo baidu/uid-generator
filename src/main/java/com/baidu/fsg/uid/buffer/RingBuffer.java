@@ -82,7 +82,7 @@ public class RingBuffer {
      * @param bufferSize must be positive & a power of 2
      * @param paddingFactor percent in (0 - 100). When the count of rest available UIDs reach the threshold, it will trigger padding buffer<br>
      *        Sample: paddingFactor=20, bufferSize=1000 -> threshold=1000 * 20 /100,  
-     *        padding buffer will be triggered when tail-cursor<threshold
+     *        padding buffer will be triggered when tail-cursor &lt; threshold
      */
     public RingBuffer(int bufferSize, int paddingFactor) {
         // check buffer size is positive & a power of 2; padding factor in (0, 100)
@@ -108,40 +108,42 @@ public class RingBuffer {
      * @param uid
      * @return false means that the buffer is full, apply {@link RejectedPutBufferHandler}
      */
-    public synchronized boolean put(long uid) {
-        long currentTail = tail.get();
-        long currentCursor = cursor.get();
+    public boolean put(long uid) {
+        synchronized(this) {
+            long currentTail = tail.get();
+            long currentCursor = cursor.get();
 
-        // tail catches the cursor, means that you can't put any cause of RingBuffer is full
-        long distance = currentTail - (currentCursor == START_POINT ? 0 : currentCursor);
-        if (distance == bufferSize - 1) {
-            rejectedPutHandler.rejectPutBuffer(this, uid);
-            return false;
+            // tail catches the cursor, means that you can't put any cause of RingBuffer is full
+            long distance = currentTail - (currentCursor == START_POINT ? 0 : currentCursor);
+            if (distance == bufferSize - 1) {
+                rejectedPutHandler.rejectPutBuffer(this, uid);
+                return false;
+            }
+
+            // 1. pre-check whether the flag is CAN_PUT_FLAG
+            int nextTailIndex = calSlotIndex(currentTail + 1);
+            if (flags[nextTailIndex].get() != CAN_PUT_FLAG) {
+                rejectedPutHandler.rejectPutBuffer(this, uid);
+                return false;
+            }
+
+            // 2. put UID in the next slot
+            // 3. update next slot' flag to CAN_TAKE_FLAG
+            // 4. publish tail with sequence increase by one
+            slots[nextTailIndex] = uid;
+            flags[nextTailIndex].set(CAN_TAKE_FLAG);
+            tail.incrementAndGet();
+
+            // The atomicity of operations above, guarantees by 'synchronized'. In another word,
+            // the take operation can't consume the UID we just put, until the tail is published(tail.incrementAndGet())
+            return true;
         }
-
-        // 1. pre-check whether the flag is CAN_PUT_FLAG
-        int nextTailIndex = calSlotIndex(currentTail + 1);
-        if (flags[nextTailIndex].get() != CAN_PUT_FLAG) {
-            rejectedPutHandler.rejectPutBuffer(this, uid);
-            return false;
-        }
-
-        // 2. put UID in the next slot
-        // 3. update next slot' flag to CAN_TAKE_FLAG
-        // 4. publish tail with sequence increase by one
-        slots[nextTailIndex] = uid;
-        flags[nextTailIndex].set(CAN_TAKE_FLAG);
-        tail.incrementAndGet();
-
-        // The atomicity of operations above, guarantees by 'synchronized'. In another word,
-        // the take operation can't consume the UID we just put, until the tail is published(tail.incrementAndGet())
-        return true;
     }
 
     /**
      * Take an UID of the ring at the next cursor, this is a lock free operation by using atomic cursor<p>
      * 
-     * Before getting the UID, we also check whether reach the padding threshold, 
+     * Before getting the UID, we also check whether reach the padding threshold,
      * the padding buffer operation will be triggered in another thread<br>
      * If there is no more available UID to be taken, the specified {@link RejectedTakeBufferHandler} will be applied<br>
      * 
@@ -154,7 +156,7 @@ public class RingBuffer {
         long nextCursor = cursor.updateAndGet(old -> old == tail.get() ? old : old + 1);
 
         // check for safety consideration, it never occurs
-        Assert.isTrue(nextCursor >= currentCursor, "Curosr can't move back");
+        Assert.isTrue(nextCursor >= currentCursor, "Cursor can't move back");
 
         // trigger padding in an async-mode if reach the threshold
         long currentTail = tail.get();
@@ -171,7 +173,7 @@ public class RingBuffer {
 
         // 1. check next slot flag is CAN_TAKE_FLAG
         int nextCursorIndex = calSlotIndex(nextCursor);
-        Assert.isTrue(flags[nextCursorIndex].get() == CAN_TAKE_FLAG, "Curosr not in can take status");
+        Assert.isTrue(flags[nextCursorIndex].get() == CAN_TAKE_FLAG, "Cursor not in can take status");
 
         // 2. get UID from next slot
         // 3. set next slot flag as CAN_PUT_FLAG.
@@ -249,13 +251,10 @@ public class RingBuffer {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("RingBuffer [bufferSize=").append(bufferSize)
-               .append(", tail=").append(tail)
-               .append(", cursor=").append(cursor)
-               .append(", paddingThreshold=").append(paddingThreshold).append("]");
-        
-        return builder.toString();
+        return String.format(
+                "RingBuffer [bufferSize=%s, tail=%s, cursor=%s, paddingThreshold=%s]",
+                bufferSize, tail, cursor, paddingThreshold
+        );
     }
 
 }

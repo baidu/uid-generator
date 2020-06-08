@@ -36,7 +36,7 @@ public abstract class NetUtils {
         try {
             localAddress = getLocalInetAddress();
         } catch (SocketException e) {
-            throw new RuntimeException("fail to get local ip.");
+            throw new IllegalArgumentException("fail to get local ip.", e);
         }
     }
 

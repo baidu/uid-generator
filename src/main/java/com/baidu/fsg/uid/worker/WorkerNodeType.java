@@ -36,7 +36,7 @@ public enum WorkerNodeType implements ValuedEnum<Integer> {
     /**
      * Constructor with field of type
      */
-    private WorkerNodeType(Integer type) {
+    WorkerNodeType(Integer type) {
         this.type = type;
     }
 

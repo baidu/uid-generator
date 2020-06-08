@@ -15,13 +15,13 @@
  */
 package com.baidu.fsg.uid;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.util.Assert;
 
 /**
  * Allocate 64 bits for the UID(long)<br>
- * sign (fixed 1bit) -> deltaSecond -> workerId -> sequence(within the same second)
+ * sign (fixed 1bit) -> deltaSecond -> workerId -> sequence (within the same second)
  * 
  * @author yutianbao
  */
@@ -34,7 +34,7 @@ public class BitsAllocator {
     /**
      * Bits for [sign-> second-> workId-> sequence]
      */
-    private int signBits = 1;
+    private final static int signBits = 1;
     private final int timestampBits;
     private final int workerIdBits;
     private final int sequenceBits;

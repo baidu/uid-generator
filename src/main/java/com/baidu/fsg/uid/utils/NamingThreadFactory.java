@@ -20,8 +20,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.commons.lang.ClassUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ClassUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,12 +70,12 @@ public class NamingThreadFactory implements ThreadFactory {
         this.name = name;
         this.daemon = daemon;
         this.uncaughtExceptionHandler = handler;
-        this.sequences = new ConcurrentHashMap<String, AtomicLong>();
+        this.sequences = new ConcurrentHashMap<>();
     }
 
     @Override
-    public Thread newThread(Runnable r) {
-        Thread thread = new Thread(r);
+    public Thread newThread(Runnable runnable) {
+        Thread thread = new Thread(runnable);
         thread.setDaemon(this.daemon);
 
         // If there is no specified name for thread, it will auto detect using the invoker classname instead.
@@ -91,6 +91,7 @@ public class NamingThreadFactory implements ThreadFactory {
             thread.setUncaughtExceptionHandler(this.uncaughtExceptionHandler);
         } else {
             thread.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+                @Override
                 public void uncaughtException(Thread t, Throwable e) {
                     LOGGER.error("unhandled exception in thread: " + t.getId() + ":" + t.getName(), e);
                 }
@@ -108,9 +109,9 @@ public class NamingThreadFactory implements ThreadFactory {
      */
     private String getInvoker(int depth) {
         Exception e = new Exception();
-        StackTraceElement[] stes = e.getStackTrace();
-        if (stes.length > depth) {
-            return ClassUtils.getShortClassName(stes[depth].getClassName());
+        StackTraceElement[] stackTraceElements = e.getStackTrace();
+        if (stackTraceElements.length > depth) {
+            return ClassUtils.getShortClassName(stackTraceElements[depth].getClassName());
         }
         return getClass().getSimpleName();
     }
@@ -122,16 +123,16 @@ public class NamingThreadFactory implements ThreadFactory {
      * @return
      */
     private long getSequence(String invoker) {
-        AtomicLong r = this.sequences.get(invoker);
-        if (r == null) {
-            r = new AtomicLong(0);
-            AtomicLong previous = this.sequences.putIfAbsent(invoker, r);
+        AtomicLong value = this.sequences.get(invoker);
+        if (value == null) {
+            value = new AtomicLong(0);
+            AtomicLong previous = this.sequences.putIfAbsent(invoker, value);
             if (previous != null) {
-                r = previous;
+                value = previous;
             }
         }
 
-        return r.incrementAndGet();
+        return value.incrementAndGet();
     }
 
     /**

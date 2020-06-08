@@ -15,7 +15,7 @@
  */
 package com.baidu.fsg.uid.utils;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,7 +96,7 @@ public abstract class DockerUtils {
 
         } else {
             LOGGER.error("Missing host or port from env for Docker. host:{}, port:{}", DOCKER_HOST, DOCKER_PORT);
-            throw new RuntimeException(
+            throw new IllegalArgumentException (
                     "Missing host or port from env for Docker. host:" + DOCKER_HOST + ", port:" + DOCKER_PORT);
         }
     }
