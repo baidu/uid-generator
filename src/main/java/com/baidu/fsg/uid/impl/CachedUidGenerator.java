@@ -80,7 +80,7 @@ public class CachedUidGenerator extends DefaultUidGenerator implements Disposabl
     public long getUID() {
         try {
             return ringBuffer.take();
-        }  catch (IllegalStateException e) {
+        } catch (IllegalStateException e) {
             LOGGER.error("Generate unique id exception. ", e);
             throw new UidGenerateException(e);
         }
