@@ -25,12 +25,12 @@ import java.util.Enumeration;
  * 
  * @author yutianbao
  */
-public abstract class NetUtils {
+public final class NetUtils {
 
     /**
      * Pre-loaded local address
      */
-    public static InetAddress localAddress;
+    public static final InetAddress localAddress;
 
     static {
         try {
@@ -39,6 +39,9 @@ public abstract class NetUtils {
             throw new IllegalArgumentException("failed to get local ip.", e);
         }
     }
+
+    /** Private Constructor */
+    private NetUtils(){}
 
     /**
      * Retrieve the first validated local ip address(the Public and LAN ip addresses are validated).

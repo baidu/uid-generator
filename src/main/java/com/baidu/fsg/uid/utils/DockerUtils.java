@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author yutianbao
  */
-public abstract class DockerUtils {
+public final class DockerUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(DockerUtils.class);
 
     /** Environment param keys */
@@ -42,6 +42,9 @@ public abstract class DockerUtils {
     static {
         retrieveFromEnv();
     }
+
+    /** Private Constructor */
+    private DockerUtils(){}
 
     /**
      * Retrieve docker host

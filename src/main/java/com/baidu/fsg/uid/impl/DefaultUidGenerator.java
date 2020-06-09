@@ -26,7 +26,7 @@ import org.springframework.beans.factory.InitializingBean;
 import com.baidu.fsg.uid.BitsAllocator;
 import com.baidu.fsg.uid.UidGenerator;
 import com.baidu.fsg.uid.exception.UidGenerateException;
-import com.baidu.fsg.uid.utils.DateUtils;
+import com.baidu.fsg.uid.utils.UidDateUtils;
 import com.baidu.fsg.uid.worker.WorkerIdAssigner;
 
 /**
@@ -75,7 +75,7 @@ public class DefaultUidGenerator implements UidGenerator, InitializingBean {
     protected long workerId;
 
     /** Volatile fields caused by nextId() */
-    protected long sequence; // 0L
+    protected long sequence = 0L;
     protected long lastSecond = -1L;
 
     /** Spring property */
@@ -119,7 +119,7 @@ public class DefaultUidGenerator implements UidGenerator, InitializingBean {
         long deltaSeconds = uid >>> (workerIdBits + sequenceBits);
 
         Date thatTime = new Date(TimeUnit.SECONDS.toMillis(epochSeconds + deltaSeconds));
-        String thatTimeStr = DateUtils.formatByDateTimePattern(thatTime);
+        String thatTimeStr = UidDateUtils.formatByDateTimePattern(thatTime);
 
         // format as string
         return String.format("{\"UID\":\"%d\",\"timestamp\":\"%s\",\"workerId\":\"%d\",\"sequence\":\"%d\"}",
@@ -214,7 +214,7 @@ public class DefaultUidGenerator implements UidGenerator, InitializingBean {
     public void setEpochStr(String epochStr) {
         if (StringUtils.isNotBlank(epochStr)) {
             this.epochStr = epochStr;
-            this.epochSeconds = TimeUnit.MILLISECONDS.toSeconds(DateUtils.parseByDayPattern(epochStr).getTime());
+            this.epochSeconds = TimeUnit.MILLISECONDS.toSeconds(UidDateUtils.parseByDayPattern(epochStr).getTime());
         }
     }
 }

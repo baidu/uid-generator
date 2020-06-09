@@ -22,7 +22,10 @@ import org.springframework.util.Assert;
  * 
  * @author yutianbao
  */
-public abstract class EnumUtils {
+public final class EnumUtils {
+
+    /** Private Constructor */
+    private EnumUtils(){}
 
     /**
      * Parse the bounded value into ValuedEnum
