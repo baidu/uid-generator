@@ -99,7 +99,7 @@ public class DefaultUidGenerator implements UidGenerator, InitializingBean {
     public long getUID() {
         try {
             return nextId();
-        } catch (UidGenerateException e) {
+        } catch (RuntimeException e) {
             LOGGER.error("Generate unique id exception. ", e);
             throw new UidGenerateException(e);
         }

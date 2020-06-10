@@ -51,10 +51,10 @@ import com.baidu.fsg.uid.exception.UidGenerateException;
 public class CachedUidGenerator extends DefaultUidGenerator implements DisposableBean {
     private static final Logger LOGGER = LoggerFactory.getLogger(CachedUidGenerator.class);
     private static final int DEFAULT_BOOST_POWER = 3;
+    private static final int PADDING_FACTOR = RingBuffer.DEFAULT_PADDING_PERCENT;
 
     /** Spring properties */
     private int boostPower = DEFAULT_BOOST_POWER;
-    private final int paddingFactor = RingBuffer.DEFAULT_PADDING_PERCENT;
     private Long scheduleInterval;
     
     private RejectedPutBufferHandler rejectedPutBufferHandler;
@@ -78,7 +78,7 @@ public class CachedUidGenerator extends DefaultUidGenerator implements Disposabl
     public long getUID() {
         try {
             return ringBuffer.take();
-        } catch (IllegalStateException e) {
+        } catch (RuntimeException e) {
             LOGGER.error("Generate unique id exception. ", e);
             throw new UidGenerateException(e);
         }
@@ -115,8 +115,8 @@ public class CachedUidGenerator extends DefaultUidGenerator implements Disposabl
     private void initRingBuffer() {
         // initialize RingBuffer
         int bufferSize = ((int) bitsAllocator.getMaxSequence() + 1) << boostPower;
-        this.ringBuffer = new RingBuffer(bufferSize, paddingFactor);
-        LOGGER.info("Initialized ring buffer size:{}, paddingFactor:{}", bufferSize, paddingFactor);
+        this.ringBuffer = new RingBuffer(bufferSize, PADDING_FACTOR);
+        LOGGER.info("Initialized ring buffer size:{}, paddingFactor:{}", bufferSize, PADDING_FACTOR);
 
         // initialize RingBufferPaddingExecutor
         boolean usingSchedule = (scheduleInterval != null);
