@@ -248,8 +248,8 @@ public class RingBuffer {
 
     @Override
     public String toString() {
-        return String.format("RingBuffer [bufferSize=" + bufferSize + ", tail=" + tail + ", cursor=" + cursor
-                        + ", paddingThreshold=" + paddingThreshold + "]");
+        return "RingBuffer [bufferSize=" + bufferSize + ", tail=" + tail + ", cursor=" + cursor
+                        + ", paddingThreshold=" + paddingThreshold + "]";
     }
 
 }
