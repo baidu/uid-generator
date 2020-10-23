@@ -1,9 +1,10 @@
 spring:
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: org.h2.Driver
     username: root
     password: 123456
-    url: jdbc:mysql://127.0.0.1:3306/zr?useUnicode=true&characterEncoding=utf8&autoReconnect=true&connectTimeout=2000&socketTimeout=2000&&serverTimezone=Asia/Shanghai
+    url: jdbc:h2:mem:uid
+    schema: classpath:WORKER_NODE.sql
 
 mybatis:
   mapper-locations: classpath:/META-INF/mybatis/mapper/WORKER*.xml
