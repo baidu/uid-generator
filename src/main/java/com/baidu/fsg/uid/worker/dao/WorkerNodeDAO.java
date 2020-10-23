@@ -17,6 +17,7 @@ package com.baidu.fsg.uid.worker.dao;
 
 import com.baidu.fsg.uid.worker.entity.WorkerNodeEntity;
 import org.apache.ibatis.annotations.Param;
+
 import org.springframework.stereotype.Repository;
 
 /**

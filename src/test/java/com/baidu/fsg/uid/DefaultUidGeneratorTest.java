@@ -9,22 +9,23 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.lang.StringUtils;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 import com.baidu.fsg.uid.impl.DefaultUidGenerator;
+import org.apache.commons.lang.StringUtils;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.mybatis.spring.annotation.MapperScan;
+
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 
 /**
  * Test for {@link DefaultUidGenerator}
  * 
  * @author yutianbao
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:uid/default-uid-spring.xml" })
+@EnableAutoConfiguration
+@SpringBootTest(classes = UidAutoConfiguraition.class)
+@MapperScan(basePackages = "com.baidu.fsg.uid.worker.dao")
 public class DefaultUidGeneratorTest {
     private static final int SIZE = 100000; // 10w
     private static final boolean VERBOSE = true;
@@ -74,7 +75,7 @@ public class DefaultUidGeneratorTest {
         }
 
         // Check generate 10w times
-        Assert.assertEquals(SIZE, control.get());
+        Assertions.assertEquals(SIZE, control.get());
 
         // Check UIDs are all unique
         checkUniqueID(uidSet);
@@ -103,8 +104,8 @@ public class DefaultUidGeneratorTest {
         uidSet.add(uid);
 
         // Check UID is positive, and can be parsed
-        Assert.assertTrue(uid > 0L);
-        Assert.assertTrue(StringUtils.isNotBlank(parsedInfo));
+        Assertions.assertTrue(uid > 0L);
+        Assertions.assertTrue(StringUtils.isNotBlank(parsedInfo));
 
         if (VERBOSE) {
             System.out.println(Thread.currentThread().getName() + " No." + index + " >>> " + parsedInfo);
@@ -116,7 +117,7 @@ public class DefaultUidGeneratorTest {
      */
     private void checkUniqueID(Set<Long> uidSet) {
         System.out.println(uidSet.size());
-        Assert.assertEquals(SIZE, uidSet.size());
+        Assertions.assertEquals(SIZE, uidSet.size());
     }
 
 }
