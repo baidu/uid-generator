@@ -1,14 +1,5 @@
 package com.baidu.fsg.uid;
 
-import com.baidu.fsg.uid.impl.CachedUidGenerator;
-import org.apache.commons.lang.StringUtils;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -17,13 +8,25 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.annotation.Resource;
+
+import com.baidu.fsg.uid.impl.CachedUidGenerator;
+import org.apache.commons.lang.StringUtils;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.mybatis.spring.annotation.MapperScan;
+
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
+
 /**
  * Test for {@link CachedUidGenerator}
  * 
  * @author yutianbao
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:uid/cached-uid-spring.xml" })
+@EnableAutoConfiguration
+@SpringBootTest(classes = {UidAutoConfiguraition.class,RejectHandler.class},properties = "uid.cached.enable=true")
+@MapperScan(basePackages = "com.baidu.fsg.uid.worker.dao")
 public class CachedUidGeneratorTest {
     private static final int SIZE = 7000000; // 700w
     private static final boolean VERBOSE = false;
@@ -76,7 +79,7 @@ public class CachedUidGeneratorTest {
         }
 
         // Check generate 700w times
-        Assert.assertEquals(SIZE, control.get());
+        Assertions.assertEquals(SIZE, control.get());
 
         // Check UIDs are all unique
         checkUniqueID(uidSet);
@@ -108,8 +111,8 @@ public class CachedUidGeneratorTest {
         }
 
         // Check UID is positive, and can be parsed
-        Assert.assertTrue(uid > 0L);
-        Assert.assertTrue(StringUtils.isNotBlank(parsedInfo));
+        Assertions.assertTrue(uid > 0L);
+        Assertions.assertTrue(StringUtils.isNotBlank(parsedInfo));
 
         if (VERBOSE) {
             System.out.println(Thread.currentThread().getName() + " No." + index + " >>> " + parsedInfo);
@@ -121,7 +124,7 @@ public class CachedUidGeneratorTest {
      */
     private void checkUniqueID(Set<Long> uidSet) throws IOException {
         System.out.println(uidSet.size());
-        Assert.assertEquals(SIZE, uidSet.size());
+        Assertions.assertEquals(SIZE, uidSet.size());
     }
 
 }

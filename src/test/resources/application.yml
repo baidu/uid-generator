@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    username: root
+    password: 123456
+    url: jdbc:h2:mem:uid
+    schema: classpath:WORKER_NODE.sql
+
+mybatis:
+  mapper-locations: classpath:/META-INF/mybatis/mapper/WORKER*.xml
+  type-aliases-package: com.baidu.fsg.uid.worker.dao
+
+
+uid:
+  enable: true
