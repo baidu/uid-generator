@@ -49,7 +49,7 @@ public interface WorkerNodeDAO {
             " FROM" +
             " WORKER_NODE" +
             " WHERE" +
-            " HOST_NAME = #{host,jdbcType=VARCHAR} AND PORT = #{port,jdbcType=VARCHAR}")
+            " HOST_NAME = #{host,jdbcType=VARCHAR} AND PORT = #{port,jdbcType=VARCHAR} limit 1")
     WorkerNodeEntity getWorkerNodeByHostPort(@Param("host") String host, @Param("port") String port);
 
     /**

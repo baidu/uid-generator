@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.github.wujun234.uid.worker;
 
 import com.github.wujun234.uid.worker.dao.WorkerNodeDAO;
@@ -27,12 +28,13 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 
 /**
- * Represents an implementation of {@link WorkerIdAssigner}, 
+ * Represents an implementation of {@link WorkerIdAssigner},
  * the worker id will be discarded after assigned to the UidGenerator
- * 
+ *
  * @author yutianbao
  */
 public class DisposableWorkerIdAssigner implements WorkerIdAssigner {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(DisposableWorkerIdAssigner.class);
 
     @Resource
@@ -42,7 +44,7 @@ public class DisposableWorkerIdAssigner implements WorkerIdAssigner {
      * Assign worker id base on database.<p>
      * If there is host name & port in the environment, we considered that the node runs in Docker container<br>
      * Otherwise, the node runs on an actual machine.
-     * 
+     *
      * @return assigned worker id
      */
     @Transactional(rollbackFor = Exception.class)
@@ -50,6 +52,12 @@ public class DisposableWorkerIdAssigner implements WorkerIdAssigner {
     public long assignWorkerId() {
         // build worker node entity
         WorkerNodeEntity workerNodeEntity = buildWorkerNode();
+
+        WorkerNodeEntity oldWorkerNode = workerNodeDAO
+                .getWorkerNodeByHostPort(workerNodeEntity.getHostName(), workerNodeEntity.getPort());
+        if (null != oldWorkerNode) {
+            return oldWorkerNode.getId();
+        }
 
         // add worker node for new (ignore the same IP + PORT)
         workerNodeDAO.addWorkerNode(workerNodeEntity);
@@ -88,7 +96,7 @@ public class DisposableWorkerIdAssigner implements WorkerIdAssigner {
         if (DockerUtils.isDocker()) {
             workerNodeEntity.setHostName(DockerUtils.getDockerHost());
             workerNodeEntity.setPort(DockerUtils.getDockerPort() + "-" + RandomUtils.nextInt(100000));
-        }else {
+        } else {
             workerNodeEntity.setHostName(NetUtils.getLocalAddress());
             workerNodeEntity.setPort(System.currentTimeMillis() + "-" + RandomUtils.nextInt(100000));
         }
