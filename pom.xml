@@ -6,7 +6,7 @@
 
     <groupId>com.github.wujun234</groupId>
     <artifactId>uid-generator-spring-boot-starter</artifactId>
-    <version>1.0.2.RELEASE</version>
+    <version>1.0.3.RELEASE</version>
     <packaging>jar</packaging>
 
     <name>uid-generator-spring-boot-starter</name>
