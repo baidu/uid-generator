@@ -71,7 +71,7 @@ public interface WorkerNodeDAO {
             "#{launchDate}," +
             "NOW()," +
             "NOW())")
-    @Options(useGeneratedKeys = true, keyColumn = "id")
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void addWorkerNode(WorkerNodeEntity workerNodeEntity);
 
 }
