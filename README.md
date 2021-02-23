@@ -94,7 +94,7 @@ uid:
   CachedUidGenerator:     # CachedUidGenerator相关参数
     boostPower: 3          # RingBuffer size扩容参数, 可提高UID生成的吞吐量, 默认:3
     paddingFactor: 50      # 指定何时向RingBuffer中填充UID, 取值为百分比(0, 100), 默认为50
-    #scheduleInterval: 60    # 默认:不配置此项, 即不实用Schedule线程. 如需使用, 请指定Schedule线程时间间隔, 单位:秒
+    #scheduleInterval: 60    # 默认:不配置此项, 即不使用Schedule线程. 如需使用, 请指定Schedule线程时间间隔, 单位:秒
 ```
 #### 可选实现
 选用CachedUidGenerator时，可以选择实现“拒绝策略”的拓展
