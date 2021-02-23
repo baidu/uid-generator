@@ -24,9 +24,6 @@ Quick Start
 ### 步骤1: 创建表WORKER_NODE
 在项目数据库里，运行sql脚本以导入表WORKER_NODE, 脚本如下:
 ```sql
-DROP DATABASE IF EXISTS `xxxx`;
-CREATE DATABASE `xxxx` ;
-use `xxxx`;
 DROP TABLE IF EXISTS WORKER_NODE;
 CREATE TABLE WORKER_NODE
 (
@@ -38,8 +35,7 @@ LAUNCH_DATE DATE NOT NULL COMMENT 'launch date',
 MODIFIED TIMESTAMP NOT NULL COMMENT 'modified time',
 CREATED TIMESTAMP NOT NULL COMMENT 'created time',
 PRIMARY KEY(ID)
-)
- COMMENT='DB WorkerID Assigner for UID Generator',ENGINE = INNODB;
+) COMMENT='DB WorkerID Assigner for UID Generator',ENGINE = INNODB;
 ```
 配置好数据库连接
 
