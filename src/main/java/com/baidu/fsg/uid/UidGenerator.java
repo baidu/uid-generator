@@ -15,6 +15,8 @@
  */
 package com.baidu.fsg.uid;
 
+import java.util.Collection;
+
 import com.baidu.fsg.uid.exception.UidGenerateException;
 
 /**
@@ -33,6 +35,15 @@ public interface UidGenerator {
     long getUID() throws UidGenerateException;
 
     /**
+     * Get some unique ID
+     *
+     * @param size the num.must more than 0.
+     * @return some UID
+     * @throws UidGenerateException
+     */
+    Collection<Long> getUID(int size) throws UidGenerateException;
+
+    /**
      * Parse the UID into elements which are used to generate the UID. <br>
      * Such as timestamp & workerId & sequence...
      *
@@ -40,5 +51,22 @@ public interface UidGenerator {
      * @return Parsed info
      */
     String parseUID(long uid);
+
+
+    /**
+     * Gets the lastDiffSecond
+     *
+     * @return lastDiffSecond
+     */
+    long getLastDiffSecond();
+
+    /**
+     * get the workerId
+     *
+     * @return workerId
+     * */
+    long getWorkerId();
+
+    int getWorkerBits();
 
 }

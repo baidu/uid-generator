@@ -16,11 +16,15 @@
 package com.baidu.fsg.uid.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import com.baidu.fsg.uid.BitsAllocator;
@@ -30,6 +34,8 @@ import com.baidu.fsg.uid.buffer.RejectedPutBufferHandler;
 import com.baidu.fsg.uid.buffer.RejectedTakeBufferHandler;
 import com.baidu.fsg.uid.buffer.RingBuffer;
 import com.baidu.fsg.uid.exception.UidGenerateException;
+import com.baidu.fsg.uid.utils.PaddedAtomicLong;
+import com.google.common.collect.Sets;
 
 /**
  * Represents a cached implementation of {@link UidGenerator} extends
@@ -48,6 +54,7 @@ import com.baidu.fsg.uid.exception.UidGenerateException;
  * 
  * @author yutianbao
  */
+@Component("cachedUidGenerator")
 public class CachedUidGenerator extends DefaultUidGenerator implements DisposableBean {
     private static final Logger LOGGER = LoggerFactory.getLogger(CachedUidGenerator.class);
     private static final int DEFAULT_BOOST_POWER = 3;
@@ -59,6 +66,11 @@ public class CachedUidGenerator extends DefaultUidGenerator implements Disposabl
     
     private RejectedPutBufferHandler rejectedPutBufferHandler;
     private RejectedTakeBufferHandler rejectedTakeBufferHandler;
+
+    /**
+     * In order to prevent the set from re expanding
+     */
+    private static final double INITIAL_CAPACITY_RATIO_NUM = 1.3;
 
     /** RingBuffer */
     private RingBuffer ringBuffer;
@@ -73,15 +85,62 @@ public class CachedUidGenerator extends DefaultUidGenerator implements Disposabl
         this.initRingBuffer();
         LOGGER.info("Initialized RingBuffer successfully.");
     }
-    
+
     @Override
     public long getUID() {
         try {
-            return ringBuffer.take();
+            long uid = ringBuffer.take();
+            if (LOGGER.isDebugEnabled()) {
+                String parsedInfo = this.parseUID(uid);
+                LOGGER.debug("getUID! parsedInfo:{}", parsedInfo);
+            }
+            return uid;
         } catch (Exception e) {
             LOGGER.error("Generate unique id exception. ", e);
             throw new UidGenerateException(e);
         }
+    }
+
+    @Override
+    public Collection<Long> getUID(int size) throws UidGenerateException {
+        if (size < 1) {
+            return Sets.newHashSet();
+        }
+        Long setSize = Math.round(size * INITIAL_CAPACITY_RATIO_NUM);
+        Set<Long> uidSet = new HashSet<>(setSize.intValue());
+        for (int i = 0; i < size; i++) {
+            doGenerate(uidSet, i);
+        }
+        return uidSet;
+    }
+
+    /**
+     * generator uid,and add to set
+     * @param uidSet
+     * @param i
+     */
+    private void doGenerate(Set<Long> uidSet, int i) {
+        long uid = this.getUID();
+        uidSet.add(uid);
+        if (LOGGER.isDebugEnabled()) {
+            String parsedInfo = this.parseUID(uid);
+            LOGGER.debug("doGenerate!" + Thread.currentThread().getName() + " No.{} index >>> {}", i, parsedInfo);
+        }
+    }
+
+    @Override
+    public long getLastDiffSecond() {
+        PaddedAtomicLong lastSecond = bufferPaddingExecutor.getLastSecond();
+        long diffSecond = lastSecond.get() - epochSeconds;
+        if (diffSecond > 0) {
+            return diffSecond;
+        }
+        return 0;
+    }
+
+    @Override
+    public long getWorkerId() {
+        return workerId;
     }
 
     @Override

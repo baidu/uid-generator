@@ -170,5 +170,12 @@ public class BufferPaddingExecutor {
         Assert.isTrue(scheduleInterval > 0, "Schedule interval must positive!");
         this.scheduleInterval = scheduleInterval;
     }
+
+    /**
+     * getLastSecond
+     */
+    public PaddedAtomicLong getLastSecond() {
+        return lastSecond;
+    }
     
 }

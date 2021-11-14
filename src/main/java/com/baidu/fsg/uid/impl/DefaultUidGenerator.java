@@ -18,6 +18,8 @@ package com.baidu.fsg.uid.impl;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.Resource;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +27,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import com.baidu.fsg.uid.BitsAllocator;
 import com.baidu.fsg.uid.UidGenerator;
-import com.baidu.fsg.uid.exception.UidGenerateException;
+import com.baidu.fsg.uid.common.UidConsts;
 import com.baidu.fsg.uid.utils.DateUtils;
 import com.baidu.fsg.uid.worker.WorkerIdAssigner;
 
@@ -42,15 +44,15 @@ import com.baidu.fsg.uid.worker.WorkerIdAssigner;
  * The {@link DefaultUidGenerator#parseUID(long)} is a tool method to parse the bits
  *
  * <pre>{@code
- * +------+----------------------+----------------+-----------+
- * | sign |     delta seconds    | worker node id | sequence  |
- * +------+----------------------+----------------+-----------+
- *   1bit          28bits              22bits         13bits
+ * +----------------------+----------------+-----------+
+ * |    delta seconds    | worker node id | sequence  |
+ * +----------------------+----------------+-----------+
+ *        40bits              10bits         13bits
  * }</pre>
  *
  * You can also specified the bits by Spring property setting.
- * <li>timeBits: default as 28
- * <li>workerBits: default as 22
+ * <li>timeBits: default as 40
+ * <li>workerBits: default as 10
  * <li>seqBits: default as 13
  * <li>epochStr: Epoch date string format 'yyyy-MM-dd'. Default as '2016-05-20'<p>
  *
@@ -58,13 +60,13 @@ import com.baidu.fsg.uid.worker.WorkerIdAssigner;
  *
  * @author yutianbao
  */
-public class DefaultUidGenerator implements UidGenerator, InitializingBean {
+public abstract class DefaultUidGenerator implements UidGenerator, InitializingBean {
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultUidGenerator.class);
 
     /** Bits allocate */
-    protected int timeBits = 28;
-    protected int workerBits = 22;
-    protected int seqBits = 13;
+    protected int timeBits = UidConsts.TIME_BITS;
+    protected int workerBits = UidConsts.WORKER_BITS;
+    protected int seqBits = UidConsts.SEQ_BITS;
 
     /** Customer epoch, unit as second. For example 2016-05-20 (ms: 1463673600000)*/
     protected String epochStr = "2016-05-20";
@@ -74,11 +76,8 @@ public class DefaultUidGenerator implements UidGenerator, InitializingBean {
     protected BitsAllocator bitsAllocator;
     protected long workerId;
 
-    /** Volatile fields caused by nextId() */
-    protected long sequence = 0L;
-    protected long lastSecond = -1L;
-
     /** Spring property */
+    @Resource(name = "loopWorkerIdAssigner")
     protected WorkerIdAssigner workerIdAssigner;
 
     @Override
@@ -93,16 +92,6 @@ public class DefaultUidGenerator implements UidGenerator, InitializingBean {
         }
 
         LOGGER.info("Initialized bits(1, {}, {}, {}) for workerID:{}", timeBits, workerBits, seqBits, workerId);
-    }
-
-    @Override
-    public long getUID() throws UidGenerateException {
-        try {
-            return nextId();
-        } catch (Exception e) {
-            LOGGER.error("Generate unique id exception. ", e);
-            throw new UidGenerateException(e);
-        }
     }
 
     @Override
@@ -124,64 +113,6 @@ public class DefaultUidGenerator implements UidGenerator, InitializingBean {
         // format as string
         return String.format("{\"UID\":\"%d\",\"timestamp\":\"%s\",\"workerId\":\"%d\",\"sequence\":\"%d\"}",
                 uid, thatTimeStr, workerId, sequence);
-    }
-
-    /**
-     * Get UID
-     *
-     * @return UID
-     * @throws UidGenerateException in the case: Clock moved backwards; Exceeds the max timestamp
-     */
-    protected synchronized long nextId() {
-        long currentSecond = getCurrentSecond();
-
-        // Clock moved backwards, refuse to generate uid
-        if (currentSecond < lastSecond) {
-            long refusedSeconds = lastSecond - currentSecond;
-            throw new UidGenerateException("Clock moved backwards. Refusing for %d seconds", refusedSeconds);
-        }
-
-        // At the same second, increase sequence
-        if (currentSecond == lastSecond) {
-            sequence = (sequence + 1) & bitsAllocator.getMaxSequence();
-            // Exceed the max sequence, we wait the next second to generate uid
-            if (sequence == 0) {
-                currentSecond = getNextSecond(lastSecond);
-            }
-
-        // At the different second, sequence restart from zero
-        } else {
-            sequence = 0L;
-        }
-
-        lastSecond = currentSecond;
-
-        // Allocate bits for UID
-        return bitsAllocator.allocate(currentSecond - epochSeconds, workerId, sequence);
-    }
-
-    /**
-     * Get next millisecond
-     */
-    private long getNextSecond(long lastTimestamp) {
-        long timestamp = getCurrentSecond();
-        while (timestamp <= lastTimestamp) {
-            timestamp = getCurrentSecond();
-        }
-
-        return timestamp;
-    }
-
-    /**
-     * Get current second
-     */
-    private long getCurrentSecond() {
-        long currentSecond = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis());
-        if (currentSecond - epochSeconds > bitsAllocator.getMaxDeltaSeconds()) {
-            throw new UidGenerateException("Timestamp bits is exhausted. Refusing UID generate. Now: " + currentSecond);
-        }
-
-        return currentSecond;
     }
 
     /**
@@ -214,5 +145,10 @@ public class DefaultUidGenerator implements UidGenerator, InitializingBean {
             this.epochStr = epochStr;
             this.epochSeconds = TimeUnit.MILLISECONDS.toSeconds(DateUtils.parseByDayPattern(epochStr).getTime());
         }
+    }
+
+    @Override
+    public int getWorkerBits() {
+        return workerBits;
     }
 }
