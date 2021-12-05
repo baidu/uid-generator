@@ -17,6 +17,7 @@ package com.baidu.fsg.uid.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -70,7 +71,7 @@ public class CachedUidGenerator extends DefaultUidGenerator implements Disposabl
     /**
      * In order to prevent the set from re expanding
      */
-    private static final double INITIAL_CAPACITY_RATIO_NUM = 1.3;
+    private static final double INITIAL_CAPACITY_RATIO_NUM = 1.4;
 
     /** RingBuffer */
     private RingBuffer ringBuffer;
@@ -104,10 +105,10 @@ public class CachedUidGenerator extends DefaultUidGenerator implements Disposabl
     @Override
     public Collection<Long> getUID(int size) throws UidGenerateException {
         if (size < 1) {
-            return Sets.newHashSet();
+            return Collections.EMPTY_SET;
         }
-        Long setSize = Math.round(size * INITIAL_CAPACITY_RATIO_NUM);
-        Set<Long> uidSet = new HashSet<>(setSize.intValue());
+        int setSize = (int) Math.round(size * INITIAL_CAPACITY_RATIO_NUM);
+        Set<Long> uidSet = new HashSet<>(setSize);
         for (int i = 0; i < size; i++) {
             doGenerate(uidSet, i);
         }

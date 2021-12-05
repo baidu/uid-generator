@@ -36,12 +36,12 @@ public class WorkerNodeServiceImpl implements WorkerNodeService {
     }
 
     @Override
-    public List<WorkerNodeEntity> getWorkerNodeByHostPort(String hostName, String port) {
-        if (StringUtils.isBlank(hostName) || StringUtils.isBlank(port)) {
+    public List<WorkerNodeEntity> getWorkerNodeByHostPort(String hostname, String port) {
+        if (StringUtils.isBlank(hostname) || StringUtils.isBlank(port)) {
             return Lists.newArrayList();
         }
         Example example = new Example(WorkerNodeEntity.class);
-        example.createCriteria().andEqualTo("hostName", hostName)
+        example.createCriteria().andEqualTo("hostname", hostname)
                 .andEqualTo("port", port);
         return workerNodeDao.selectByExample(example);
     }

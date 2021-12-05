@@ -17,11 +17,6 @@ public interface WorkerIdLatestSecondDao extends BaseDao<WorkerIdLatestSecondEnt
 
     String TABLE = "worker_id_latest_second";
 
-    @Select({
-            "SELECT * "
-                    + "FROM "
-                    + TABLE
-                    + " WHERE worker_id = #{workerId} FOR UPDATE"
-    })
+    @Select({"SELECT * FROM " + TABLE + " WHERE worker_id = #{workerId} FOR UPDATE"})
     WorkerIdLatestSecondEntity getByWorkerIdForUpdate(@Param("workerId") Long workerId);
 }

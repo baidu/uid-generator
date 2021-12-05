@@ -18,12 +18,11 @@ public class WorkerNodeUtils {
         WorkerNodeEntity workerNodeEntity = new WorkerNodeEntity();
         if (DockerUtils.isDocker()) {
             workerNodeEntity.setType(WorkerNodeType.CONTAINER.value());
-            workerNodeEntity.setHostName(DockerUtils.getDockerHost());
+            workerNodeEntity.setHostname(DockerUtils.getDockerHost());
             workerNodeEntity.setPort(DockerUtils.getDockerPort());
-
         } else {
             workerNodeEntity.setType(WorkerNodeType.ACTUAL.value());
-            workerNodeEntity.setHostName(NetUtils.getLocalAddress());
+            workerNodeEntity.setHostname(NetUtils.getLocalAddress());
             workerNodeEntity.setPort(System.currentTimeMillis() + "-" + RandomUtils.nextInt(100000));
         }
         return workerNodeEntity;

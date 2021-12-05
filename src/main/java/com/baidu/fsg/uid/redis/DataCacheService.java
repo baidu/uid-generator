@@ -23,5 +23,5 @@ public interface DataCacheService {
      * @param workerId workerId
      * @return latestTimestamp
      */
-    Long getLatestTimestamp(long workerId);
+    long getLatestTimestamp(long workerId);
 }

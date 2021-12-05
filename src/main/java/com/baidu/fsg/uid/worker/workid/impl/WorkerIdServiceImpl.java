@@ -39,10 +39,10 @@ public class WorkerIdServiceImpl implements WorkerIdService {
             return false;
         }
         // Get cached lastSecond by workerId
-        Long latestTimestamp = getMaxLatestTimestamp(workerId);
+        long latestTimestamp = getMaxLatestTimestamp(workerId);
 
-        // If lastDiffSecond is null or 0,Indicates that it has not been used then return true
-        if (latestTimestamp == null || latestTimestamp == 0) {
+        // If lastDiffSecond is 0,Indicates that it has not been used then return true
+        if (latestTimestamp == 0) {
             return tryAcquireLock(workerId, workerNodeId);
         }
         Long latestDiffSecond = TimeUnit.MILLISECONDS.toSeconds(latestTimestamp);
@@ -79,16 +79,15 @@ public class WorkerIdServiceImpl implements WorkerIdService {
      * run at startup
      *
      */
-    private Long getMaxLatestTimestamp(long workerId) {
+    private long getMaxLatestTimestamp(long workerId) {
         // get data from redis
-        Long redisDate = dataCacheService.getLatestTimestamp(workerId);
+        long redisDate = dataCacheService.getLatestTimestamp(workerId);
         // get data from db
         WorkerIdLatestSecondEntity entity = workerIdLatestSecondService.getByWorkerIdForUpdate(workerId);
-        if (redisDate == null && entity == null) {
-            return null;
+        if (entity == null || entity.getModified() == null) {
+            return redisDate;
         }
-        Long dbData = entity == null ? 0 : entity.getModified();
-        return dbData > (redisDate == null ? 0 : redisDate) ? dbData : redisDate;
+        return Math.max(redisDate, entity.getModified());
     }
 
     @Override

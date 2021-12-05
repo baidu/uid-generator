@@ -13,7 +13,7 @@ public class UidConsts {
     /**
      * time bits
      */
-    public static final int TIME_BITS = 30 + 10;
+    public static final int TIME_BITS = 40;
     /**
      * workerId bits
      */

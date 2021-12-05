@@ -22,9 +22,9 @@ public interface WorkerNodeService {
     /**
      * get by hostName and port
      *
-     * @param hostName host
+     * @param hostname host
      * @param port     port
      * @return entity
      */
-    List<WorkerNodeEntity> getWorkerNodeByHostPort(String hostName, String port);
+    List<WorkerNodeEntity> getWorkerNodeByHostPort(String hostname, String port);
 }

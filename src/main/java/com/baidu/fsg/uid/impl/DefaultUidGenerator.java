@@ -44,10 +44,10 @@ import com.baidu.fsg.uid.worker.WorkerIdAssigner;
  * The {@link DefaultUidGenerator#parseUID(long)} is a tool method to parse the bits
  *
  * <pre>{@code
- * +----------------------+----------------+-----------+
- * |    delta seconds    | worker node id | sequence  |
- * +----------------------+----------------+-----------+
- *        40bits              10bits         13bits
+ * +------+----------------------+----------------+-----------+
+ * | sign |     delta seconds    | worker node id | sequence  |
+ * +------+----------------------+----------------+-----------+
+ *   1bit          40bits              10bits         13bits
  * }</pre>
  *
  * You can also specified the bits by Spring property setting.

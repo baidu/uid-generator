@@ -27,7 +27,7 @@ public class DataCacheServiceImpl implements DataCacheService {
 
     @Override
     public boolean storeLatestTimestamp(long workerId, long latestTimestamp) {
-        if (workerId < 0 && latestTimestamp < 0) {
+        if (workerId < 0 || latestTimestamp < 0) {
             return false;
         }
         if (LOGGER.isDebugEnabled()) {
@@ -38,9 +38,9 @@ public class DataCacheServiceImpl implements DataCacheService {
     }
 
     @Override
-    public Long getLatestTimestamp(long workerId) {
+    public long getLatestTimestamp(long workerId) {
         if (workerId < 0) {
-            return null;
+            return 0;
         }
         String latestTimestamp = redisClient.hget(UidConsts.WORKER_ID_REDIS_KEY, String.valueOf(workerId));
         if (StringUtils.isNotBlank(latestTimestamp)) {
@@ -49,6 +49,6 @@ public class DataCacheServiceImpl implements DataCacheService {
             }
             return Long.parseLong(latestTimestamp);
         }
-        return null;
+        return 0;
     }
 }

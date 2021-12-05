@@ -29,7 +29,7 @@ public class WorkerIdLatestSecondServiceImpl implements WorkerIdLatestSecondServ
 
     @Override
     public int updateByWorkerId(WorkerIdLatestSecondEntity workerIdLatestSecondEntity) {
-        if (workerIdLatestSecondEntity == null || workerIdLatestSecondEntity.getWorkerId() == null
+        if (validateEntityAndWorkerId(workerIdLatestSecondEntity)
                 || workerIdLatestSecondEntity.getLastDiffSecond() == null) {
             return 0;
         }
@@ -57,8 +57,8 @@ public class WorkerIdLatestSecondServiceImpl implements WorkerIdLatestSecondServ
 
     @Override
     public boolean acquireLock(WorkerIdLatestSecondEntity workerIdLatestSecondEntity) {
-        if (workerIdLatestSecondEntity == null || workerIdLatestSecondEntity.getWorkerId() == null ||
-                null == workerIdLatestSecondEntity.getWorkerNodeId()) {
+        if (validateEntityAndWorkerId(workerIdLatestSecondEntity)
+                || workerIdLatestSecondEntity.getLastDiffSecond() == null) {
             return false;
         }
         WorkerIdLatestSecondEntity dbEntity = this.getByWorkerId(workerIdLatestSecondEntity.getWorkerId());
@@ -70,6 +70,15 @@ public class WorkerIdLatestSecondServiceImpl implements WorkerIdLatestSecondServ
             example.createCriteria().andEqualTo(WORKER_NODE_ID, workerIdLatestSecondEntity.getWorkerNodeId());
             return 1 == workerIdLatestSecondDao.updateByExampleSelective(workerIdLatestSecondEntity, example);
         }
+    }
+
+    /**
+     * Verify the legitimacy of WorkerIdLatestSecondEntity and workerId
+     * @param workerIdLatestSecondEntity
+     * @return
+     */
+    private boolean validateEntityAndWorkerId(WorkerIdLatestSecondEntity workerIdLatestSecondEntity) {
+        return workerIdLatestSecondEntity == null || workerIdLatestSecondEntity.getWorkerId() == null;
     }
 
 }

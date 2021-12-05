@@ -51,7 +51,7 @@ public class LoopWorkerIdAssigner implements WorkerIdAssigner {
     public long assignWorkerId() {
         for (int i = 0; i < GET_WORKERID_MAX_NUM; i++) {
             Long workerId = tryAssignWorkerId();
-            if (null == workerId) {
+            if (workerId == null) {
                 continue;
             }
             LOGGER.info("assignWorkerId success!workerid:{}, num:{}", workerId, i);

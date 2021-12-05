@@ -22,9 +22,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.apache.commons.lang.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-
 import com.baidu.fsg.uid.worker.WorkerNodeType;
 
 import lombok.Builder;
@@ -56,9 +53,9 @@ public class WorkerNodeEntity {
     private Long id;
 
     /**
-     * Type of CONTAINER: HostName, ACTUAL : IP.
+     * Type of CONTAINER: Hostname, ACTUAL : IP.
      */
-    private String hostName;
+    private String hostname;
 
     /**
      * Type of CONTAINER: Port, ACTUAL : Timestamp + Random(0-10000)

@@ -7,5 +7,5 @@ CREATE TABLE `worker_id_latest_second` (
   `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'created time',
   `modified` bigint(20) NOT NULL DEFAULT '0' COMMENT 'modified time',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `worker_id_index` (`worker_id`)
+  UNIQUE KEY `worker_id_unique_index` (`worker_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Storage information of workerId and latest timestamp';
