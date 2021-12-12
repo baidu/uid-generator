@@ -5,7 +5,7 @@ import java.util.List;
 import com.baidu.fsg.uid.worker.entity.WorkerNodeEntity;
 
 /**
- * WorkerNodeService
+ * Service For WorkerNode, add or select WorkerNode.
  *
  * @author gongxiaoyue
  */

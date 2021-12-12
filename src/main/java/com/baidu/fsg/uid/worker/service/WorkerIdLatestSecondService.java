@@ -3,7 +3,7 @@ package com.baidu.fsg.uid.worker.service;
 import com.baidu.fsg.uid.worker.entity.WorkerIdLatestSecondEntity;
 
 /**
- * WorkIdLastSecondService
+ * Service For WorkerIdLatestSecond, update or select WorkerIdLatestSecond.
  *
  * @author gongxiaoyue
  */

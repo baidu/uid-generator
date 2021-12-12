@@ -36,7 +36,6 @@ import com.baidu.fsg.uid.buffer.RejectedTakeBufferHandler;
 import com.baidu.fsg.uid.buffer.RingBuffer;
 import com.baidu.fsg.uid.exception.UidGenerateException;
 import com.baidu.fsg.uid.utils.PaddedAtomicLong;
-import com.google.common.collect.Sets;
 
 /**
  * Represents a cached implementation of {@link UidGenerator} extends

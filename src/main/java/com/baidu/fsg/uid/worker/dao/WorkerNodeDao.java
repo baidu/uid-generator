@@ -21,7 +21,7 @@ import com.baidu.fsg.uid.worker.entity.WorkerNodeEntity;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
- * DAO for M_WORKER_NODE
+ * DAO for WorkerNode
  *
  * @author yutianbao
  */

@@ -27,6 +27,11 @@ public enum WorkerIdAssignerStrategy {
         this.name = name;
     }
 
+    /**
+     * get WorkerIdAssignerStrategy by value. Default is DISPOSABLE
+     * @param value
+     * @return
+     */
     public static WorkerIdAssignerStrategy valueOf(Integer value) {
         for (WorkerIdAssignerStrategy item : values()) {
             if (item.value.equals(value)) {

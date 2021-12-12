@@ -34,6 +34,9 @@ public class ShutdownContext implements ApplicationContextAware {
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         if (applicationContext instanceof ConfigurableApplicationContext) {
             this.context = (ConfigurableApplicationContext) applicationContext;
+        } else {
+            throw new RuntimeException("ApplicationContext is not of type ConfigurableApplicationContext. "
+                    + "If the workerId cannot be applied, the system cannot  shut down");
         }
     }
 }

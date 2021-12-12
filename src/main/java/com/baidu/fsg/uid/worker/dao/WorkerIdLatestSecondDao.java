@@ -8,7 +8,7 @@ import com.baidu.fsg.uid.worker.dao.base.BaseDao;
 import com.baidu.fsg.uid.worker.entity.WorkerIdLatestSecondEntity;
 
 /**
- * WorkIdLastSecondDao
+ * DAO for WorkIdLastSecond
  *
  * @author gongxiaoyue
  */

@@ -81,13 +81,14 @@ public class WorkerIdServiceImpl implements WorkerIdService {
      */
     private long getMaxLatestTimestamp(long workerId) {
         // get data from redis
-        long redisDate = dataCacheService.getLatestTimestamp(workerId);
+        long redisData = dataCacheService.getLatestTimestamp(workerId);
         // get data from db
         WorkerIdLatestSecondEntity entity = workerIdLatestSecondService.getByWorkerIdForUpdate(workerId);
         if (entity == null || entity.getModified() == null) {
-            return redisDate;
+            // redisData must is 0 when entity or entity.getModified() is null
+            return redisData;
         }
-        return Math.max(redisDate, entity.getModified());
+        return Math.max(redisData, entity.getModified());
     }
 
     @Override

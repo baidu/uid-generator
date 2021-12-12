@@ -1,7 +1,7 @@
 package com.baidu.fsg.uid.worker.workid;
 
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
@@ -9,11 +9,11 @@ import javax.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.baidu.fsg.uid.ShutdownContext;
 import com.baidu.fsg.uid.UidGenerator;
-import com.baidu.fsg.uid.common.UidConsts;
 import com.baidu.fsg.uid.redis.DataCacheService;
 import com.baidu.fsg.uid.utils.NamingThreadFactory;
 import com.baidu.fsg.uid.worker.WorkerIdAssignerStrategy;
@@ -36,10 +36,10 @@ public class TimestampScheduledTask implements InitializingBean {
 
     private static final long DEFAULT_SCHEDULE_INTERVAL = 10L; // 10 seconds
 
-    private static final int TOLERATE_MAX_TIME = 3;
+    private static final int TOLERATE_MAX_TIMES = 3;
 
     private final ScheduledExecutorService persistentTimestampSchedule =
-            Executors.newSingleThreadScheduledExecutor(new NamingThreadFactory(SCHEDULE_NAME));
+            new ScheduledThreadPoolExecutor(1, new NamingThreadFactory(SCHEDULE_NAME));
 
     @Resource(name = "cachedUidGenerator")
     private UidGenerator uidGenerator;
@@ -53,30 +53,31 @@ public class TimestampScheduledTask implements InitializingBean {
     @Resource
     private DataCacheService dataCacheService;
 
-    private int tolerateTime = 0;
+    @Value("${baidu.uid-generator.workerIdAssignerStrategyType:1}")
+    private Integer workerIdAssignerStrategyType;
+
+    private int tolerateTimes = 0;
 
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        if (UidConsts.WORKER_ID_ASSIGNER_STRATEGY.equals(WorkerIdAssignerStrategy.LOOP)) {
+        if (WorkerIdAssignerStrategy.LOOP.equals(WorkerIdAssignerStrategy.valueOf(workerIdAssignerStrategyType))) {
             this.startTask();
             LOGGER.info("start persistent timestamp task successfully.");
         }
     }
 
     public void startTask() {
-        if (persistentTimestampSchedule != null) {
-            // perform timestamp persistence every DEFAULT_SCHEDULE_INTERVAL seconds
-            persistentTimestampSchedule.scheduleWithFixedDelay(() -> run(), DEFAULT_SCHEDULE_INTERVAL,
-                    DEFAULT_SCHEDULE_INTERVAL, TimeUnit.SECONDS);
-        }
+        // perform timestamp persistence every DEFAULT_SCHEDULE_INTERVAL seconds
+        persistentTimestampSchedule.scheduleWithFixedDelay(() -> run(), DEFAULT_SCHEDULE_INTERVAL,
+                DEFAULT_SCHEDULE_INTERVAL, TimeUnit.SECONDS);
     }
 
     public void run() {
-        // set true if save to db failed
-        boolean dbFlag = false;
-        // set true if save to redis failed
-        boolean redisFlag = false;
+        // set false if save to db failed
+        boolean saveDb = Boolean.TRUE;
+        // set false if save to redis failed
+        boolean saveRedis = Boolean.TRUE;
         long timestamp = System.currentTimeMillis();
         try {
             // construct workerIdLastSecondEntity
@@ -87,25 +88,27 @@ public class TimestampScheduledTask implements InitializingBean {
             // save to db
             workerIdLatestSecondService.updateByWorkerId(workerIdLatestSecondEntity);
         } catch (Exception e) {
-            dbFlag = true;
+            saveDb = Boolean.FALSE;
             LOGGER.error("TimestampScheduledTask write db fail:", e);
         }
         try {
             // save to redis
             dataCacheService.storeLatestTimestamp(uidGenerator.getWorkerId(), timestamp);
         } catch (Exception e) {
-            redisFlag = true;
+            saveRedis = Boolean.FALSE;
             LOGGER.error("TimestampScheduledTask write redis fail:", e);
         }
-        if (dbFlag && redisFlag) {
-            LOGGER.error("timestamp write database and redis fail, showdown the server!");
-            if (TOLERATE_MAX_TIME == ++tolerateTime) {
+        if (!saveDb && !saveRedis) {
+            LOGGER.error("timestamp write database and redis fail!");
+            if (TOLERATE_MAX_TIMES == ++tolerateTimes) {
+                LOGGER.error("timestamp write database and redis fail, showdown the server!");
                 shutdownContext.showdown();
             }
         } else {
-            tolerateTime = 0;
+            // tolerateTimes  reset
+            tolerateTimes = 0;
         }
-        LOGGER.info("timestamp write database or redis success! workerid = {}, lastDiffSecond = {}",
+        LOGGER.info("timestamp write database or redis success! workerId = {}, lastDiffSecond = {}",
                 uidGenerator.getWorkerId(), uidGenerator.getLastDiffSecond());
     }
 }
