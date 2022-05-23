@@ -4,7 +4,6 @@ buildscript {
     }
     dependencies {
         classpath 'jp.ne.paypay.gradle:paypay-gradle-plugin:2.5.6'
-        classpath 'jp.ne.paypay.gradle:paypay-dependency-management-plugin:2.6.6-PP4'
     }
 }
 
@@ -13,7 +12,6 @@ plugins {
     id 'org.flywaydb.flyway' version "6.3.2"
 }
 
-apply plugin: 'paypay-dependency-management'
 apply plugin: 'paypay'
 
 
