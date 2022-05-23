@@ -81,6 +81,7 @@ flyway {
 
 test {
     useJUnitPlatform()
+    maxHeapSize = "3g"
 
     doFirst() {
         dockerCompose.exposeAsEnvironment(test)
