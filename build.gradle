@@ -1,13 +1,44 @@
+buildscript {
+    repositories {
+        maven { url 'https://artifactory.platform.paypay.ne.jp/artifactory/libs-release/' }
+    }
+    dependencies {
+        classpath 'jp.ne.paypay.gradle:paypay-gradle-plugin:2.5.6'
+        classpath 'jp.ne.paypay.gradle:paypay-dependency-management-plugin:2.6.6-PP4'
+    }
+}
 
 plugins {
-    id 'java'
-    id 'maven-publish'
+    id 'java-library'
+}
+
+apply plugin: 'paypay-dependency-management'
+apply plugin: 'paypay'
+
+
+group = 'com.baidu.fsg'
+version = '1.0.0-SNAPSHOT'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+paypay {
+    // Plugin documentation https://github.com/Pay-Baymax/paypay-gradle-plugin
+    ci {
+        projectName = 'uid-generator'
+        githubRepoName = 'paypay/uid-generator'
+        publishLibrary = true
+    }
 }
 
 repositories {
-    mavenLocal()
-    maven {
-        url = uri('https://repo.maven.apache.org/maven2/')
+    maven { url 'https://artifactory.platform.paypay.ne.jp/artifactory/libs-release/' }
+}
+
+
+configurations {
+    all {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
     }
 }
 
@@ -29,23 +60,3 @@ dependencies {
     testImplementation 'com.alibaba:druid:1.0.19'
 }
 
-group = 'com.baidu.fsg'
-version = '1.0.0-SNAPSHOT'
-description = 'UID-Generator'
-java.sourceCompatibility = JavaVersion.VERSION_1_8
-
-java {
-    withSourcesJar()
-}
-
-publishing {
-    publications {
-        maven(MavenPublication) {
-            from(components.java)
-        }
-    }
-}
-
-tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
-}
