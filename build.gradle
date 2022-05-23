@@ -10,6 +10,7 @@ buildscript {
 
 plugins {
     id 'java-library'
+    id 'org.flywaydb.flyway' version "6.3.2"
 }
 
 apply plugin: 'paypay-dependency-management'
@@ -68,3 +69,29 @@ dependencies {
     testImplementation 'com.alibaba:druid:1.2.9'
 }
 
+java {
+    withSourcesJar()
+}
+
+flyway {
+    url = 'jdbc:mysql://127.0.0.1:3306/uid_generator?useSSL=false'
+    user = 'root'
+    password = 'my-secret-root-password'
+}
+
+test {
+    useJUnitPlatform()
+
+    doFirst() {
+        dockerCompose.exposeAsEnvironment(test)
+    }
+
+    dependsOn(flywayClean, flywayMigrate, composeUp)
+}
+
+composeUp.doLast {
+    flyway.url = "jdbc:mysql://127.0.0.1:${dockerCompose.servicesInfos.get("mysql").getTcpPorts().get(3306)}/uid_generator?useSSL=false"
+    project.logger.info('Set flyway.url to: {}', flyway.url)
+    flywayMigrate.dependsOn(composeUp)
+    flywayClean.dependsOn(composeUp)
+}

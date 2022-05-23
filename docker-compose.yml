@@ -1,0 +1,14 @@
+version: '3'
+services:
+  mysql:
+    image: mysql:5.7.35
+    ports:
+      - "3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "my-secret-root-password"
+      MYSQL_DATABASE: "uid_generator"
+    healthcheck:
+      test: "/usr/bin/mysql --user=root --password=my-secret-root-password --execute \"SHOW DATABASES;\""
+      interval: 5s
+      timeout: 5s
+      retries: 30
