@@ -25,26 +25,30 @@ import java.util.Enumeration;
  * 
  * @author yutianbao
  */
-public abstract class NetUtils {
+public final class NetUtils {
 
     /**
      * Pre-loaded local address
      */
-    public static InetAddress localAddress;
+    public static final InetAddress localAddress;
 
     static {
         try {
             localAddress = getLocalInetAddress();
-        } catch (SocketException e) {
-            throw new RuntimeException("fail to get local ip.");
+        } catch (SocketException | IllegalArgumentException e) {
+            throw new IllegalArgumentException("failed to get local ip.", e);
         }
     }
+
+    /** Private Constructor */
+    private NetUtils(){}
 
     /**
      * Retrieve the first validated local ip address(the Public and LAN ip addresses are validated).
      *
      * @return the local address
      * @throws SocketException the socket exception
+     * @throws IllegalArgumentException no valid local address found
      */
     public static InetAddress getLocalInetAddress() throws SocketException {
         // enumerates all network interfaces
@@ -69,7 +73,7 @@ public abstract class NetUtils {
             }
         }
 
-        throw new RuntimeException("No validated local address!");
+        throw new IllegalArgumentException("No validated local address!");
     }
 
     /**

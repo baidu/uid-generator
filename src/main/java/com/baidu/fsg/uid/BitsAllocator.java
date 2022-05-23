@@ -34,7 +34,7 @@ public class BitsAllocator {
     /**
      * Bits for [sign-> second-> workId-> sequence]
      */
-    private int signBits = 1;
+    private static final int SIGN_BITS = 1;
     private final int timestampBits;
     private final int workerIdBits;
     private final int sequenceBits;
@@ -58,7 +58,7 @@ public class BitsAllocator {
      */
     public BitsAllocator(int timestampBits, int workerIdBits, int sequenceBits) {
         // make sure allocated 64 bits
-        int allocateTotalBits = signBits + timestampBits + workerIdBits + sequenceBits;
+        int allocateTotalBits = SIGN_BITS + timestampBits + workerIdBits + sequenceBits;
         Assert.isTrue(allocateTotalBits == TOTAL_BITS, "allocate not enough 64 bits");
 
         // initialize bits
@@ -93,7 +93,7 @@ public class BitsAllocator {
      * Getters
      */
     public int getSignBits() {
-        return signBits;
+        return SIGN_BITS;
     }
 
     public int getTimestampBits() {

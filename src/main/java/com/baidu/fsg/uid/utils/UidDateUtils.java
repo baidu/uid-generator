@@ -26,7 +26,7 @@ import org.apache.commons.lang3.time.DateFormatUtils;
  *
  * @author yutianbao
  */
-public abstract class DateUtils extends org.apache.commons.lang3.time.DateUtils {
+public abstract class UidDateUtils extends org.apache.commons.lang3.time.DateUtils {
     /**
      * Patterns
      */
@@ -34,7 +34,7 @@ public abstract class DateUtils extends org.apache.commons.lang3.time.DateUtils 
     public static final String DATETIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
     public static final String DATETIME_MS_PATTERN = "yyyy-MM-dd HH:mm:ss.SSS";
 
-    public static final Date DEFAULT_DATE = DateUtils.parseByDayPattern("1970-01-01");
+    public static final Date DEFAULT_DATE = UidDateUtils.parseByDayPattern("1970-01-01");
 
     /**
      * Parse date by 'yyyy-MM-dd' pattern
@@ -62,13 +62,13 @@ public abstract class DateUtils extends org.apache.commons.lang3.time.DateUtils 
      * @param str
      * @param pattern
      * @return
-     * @throws RuntimeException when ParseException occurred
+     * @throws IllegalArgumentException when ParseException occurred
      */
     public static Date parseDate(String str, String pattern) {
         try {
             return parseDate(str, new String[]{pattern});
         } catch (ParseException e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException("invalid pattern", e);
         }
     }
 

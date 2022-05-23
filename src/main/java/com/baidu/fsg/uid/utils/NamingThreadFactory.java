@@ -70,7 +70,7 @@ public class NamingThreadFactory implements ThreadFactory {
         this.name = name;
         this.daemon = daemon;
         this.uncaughtExceptionHandler = handler;
-        this.sequences = new ConcurrentHashMap<String, AtomicLong>();
+        this.sequences = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -91,6 +91,7 @@ public class NamingThreadFactory implements ThreadFactory {
             thread.setUncaughtExceptionHandler(this.uncaughtExceptionHandler);
         } else {
             thread.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+                @Override
                 public void uncaughtException(Thread t, Throwable e) {
                     LOGGER.error("unhandled exception in thread: " + t.getId() + ":" + t.getName(), e);
                 }

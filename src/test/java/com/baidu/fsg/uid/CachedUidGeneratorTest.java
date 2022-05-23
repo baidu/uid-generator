@@ -84,11 +84,11 @@ public class CachedUidGeneratorTest {
     }
 
     /**
-     * Woker run
+     * Worker run
      */
     private void workerRun(Set<Long> uidSet, AtomicInteger control) {
         for (;;) {
-            int myPosition = control.updateAndGet(old -> (old == SIZE ? SIZE : old + 1));
+            int myPosition = control.updateAndGet(old -> old == SIZE ? SIZE : old + 1);
             if (myPosition == SIZE) {
                 return;
             }
