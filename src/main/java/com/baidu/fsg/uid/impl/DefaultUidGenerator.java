@@ -18,7 +18,7 @@ package com.baidu.fsg.uid.impl;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;

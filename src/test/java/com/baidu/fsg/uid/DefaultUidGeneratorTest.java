@@ -9,21 +9,21 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.lang.StringUtils;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.baidu.fsg.uid.impl.DefaultUidGenerator;
 
 /**
  * Test for {@link DefaultUidGenerator}
- * 
+ *
  * @author yutianbao
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = { "classpath:uid/default-uid-spring.xml" })
 public class DefaultUidGeneratorTest {
     private static final int SIZE = 100000; // 10w
@@ -50,7 +50,7 @@ public class DefaultUidGeneratorTest {
 
     /**
      * Test for parallel generate
-     * 
+     *
      * @throws InterruptedException
      */
     @Test
@@ -74,7 +74,7 @@ public class DefaultUidGeneratorTest {
         }
 
         // Check generate 10w times
-        Assert.assertEquals(SIZE, control.get());
+        Assertions.assertEquals(SIZE, control.get());
 
         // Check UIDs are all unique
         checkUniqueID(uidSet);
@@ -103,8 +103,8 @@ public class DefaultUidGeneratorTest {
         uidSet.add(uid);
 
         // Check UID is positive, and can be parsed
-        Assert.assertTrue(uid > 0L);
-        Assert.assertTrue(StringUtils.isNotBlank(parsedInfo));
+        Assertions.assertTrue(uid > 0L);
+        Assertions.assertTrue(StringUtils.isNotBlank(parsedInfo));
 
         if (VERBOSE) {
             System.out.println(Thread.currentThread().getName() + " No." + index + " >>> " + parsedInfo);
@@ -116,7 +116,7 @@ public class DefaultUidGeneratorTest {
      */
     private void checkUniqueID(Set<Long> uidSet) {
         System.out.println(uidSet.size());
-        Assert.assertEquals(SIZE, uidSet.size());
+        Assertions.assertEquals(SIZE, uidSet.size());
     }
 
 }

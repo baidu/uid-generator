@@ -20,15 +20,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.commons.lang.ClassUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ClassUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Named thread in ThreadFactory. If there is no specified name for thread, it
  * will auto detect using the invoker classname instead.
- * 
+ *
  * @author yutianbao
  */
 public class NamingThreadFactory implements ThreadFactory {
@@ -102,7 +102,7 @@ public class NamingThreadFactory implements ThreadFactory {
 
     /**
      * Get the method invoker's class name
-     * 
+     *
      * @param depth
      * @return
      */
@@ -117,7 +117,7 @@ public class NamingThreadFactory implements ThreadFactory {
 
     /**
      * Get sequence for different naming prefix
-     * 
+     *
      * @param invoker
      * @return
      */

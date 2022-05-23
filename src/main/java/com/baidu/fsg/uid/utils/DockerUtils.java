@@ -15,13 +15,13 @@
  */
 package com.baidu.fsg.uid.utils;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * DockerUtils
- * 
+ *
  * @author yutianbao
  */
 public abstract class DockerUtils {
@@ -45,7 +45,7 @@ public abstract class DockerUtils {
 
     /**
      * Retrieve docker host
-     * 
+     *
      * @return empty string if not a docker
      */
     public static String getDockerHost() {
@@ -54,7 +54,7 @@ public abstract class DockerUtils {
 
     /**
      * Retrieve docker port
-     * 
+     *
      * @return empty string if not a docker
      */
     public static String getDockerPort() {
@@ -63,7 +63,7 @@ public abstract class DockerUtils {
 
     /**
      * Whether a docker
-     * 
+     *
      * @return
      */
     public static boolean isDocker() {
