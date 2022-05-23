@@ -7,8 +7,3 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: "my-secret-root-password"
       MYSQL_DATABASE: "uid_generator"
-    healthcheck:
-      test: "/usr/bin/mysql --user=root --password=my-secret-root-password --execute \"SHOW DATABASES;\""
-      interval: 5s
-      timeout: 5s
-      retries: 30
