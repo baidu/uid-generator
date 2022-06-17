@@ -4,9 +4,9 @@
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
     <!-- UID generator -->
-    <bean id="disposableWorkerIdAssigner" class="com.baidu.fsg.uid.worker.DisposableWorkerIdAssigner"/>
+    <bean id="disposableWorkerIdAssigner" class="jp.ne.paypay.uid.worker.DisposableWorkerIdAssigner"/>
 
-    <bean id="defaultUidGenerator" class="com.baidu.fsg.uid.impl.DefaultUidGenerator" lazy-init="false">
+    <bean id="defaultUidGenerator" class="jp.ne.paypay.uid.impl.DefaultUidGenerator" lazy-init="false">
         <property name="workerIdAssigner" ref="disposableWorkerIdAssigner"/>
 
         <!-- Specified bits & epoch as your demand. No specified the default value will be used -->
@@ -17,6 +17,6 @@
     </bean>
 
     <!-- Import mybatis config -->
-    <import resource="classpath:/uid/mybatis-spring.xml"/>
+    <import resource="classpath:/uid/uid-spring.xml"/>
 
 </beans>

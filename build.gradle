@@ -15,7 +15,7 @@ plugins {
 apply plugin: 'paypay'
 
 
-group = 'com.baidu.fsg'
+group = 'ne.jp.paypay'
 version = '1.0.0-SNAPSHOT'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -52,8 +52,6 @@ dependencies {
     implementation "org.springframework:spring-beans:${springVersion}"
     implementation "org.springframework:spring-context:${springVersion}"
     implementation "org.springframework:spring-jdbc:${springVersion}"
-    implementation 'org.mybatis:mybatis:3.5.9'
-    implementation 'org.mybatis:mybatis-spring:2.0.7'
     implementation 'org.apache.commons:commons-collections4:4.4'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
     implementation "org.slf4j:slf4j-api:${slf4jVersion}"
