@@ -1,8 +1,8 @@
 package jp.ne.paypay.uid.worker.dao;
 
 import jp.ne.paypay.uid.worker.entity.WorkerNodeEntity;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -12,7 +12,7 @@ import java.sql.SQLException;
 import java.util.Date;
 
 public class WorkerNodeDAOImpl implements WorkerNodeDAO {
-    private static final Logger LOGGER = LoggerFactory.getLogger(WorkerNodeDAOImpl.class);
+    private static final Logger LOGGER = LogManager.getLogger(WorkerNodeDAOImpl.class);
 
     private final Connection connection;
 

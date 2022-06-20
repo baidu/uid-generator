@@ -17,8 +17,8 @@ package jp.ne.paypay.uid.buffer;
 
 import jp.ne.paypay.uid.utils.NamingThreadFactory;
 import jp.ne.paypay.uid.utils.PaddedAtomicLong;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.util.Assert;
 
 import java.util.List;
@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author yutianbao
  */
 public class BufferPaddingExecutor {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RingBuffer.class);
+    private static final Logger LOGGER = LogManager.getLogger(RingBuffer.class);
 
     /** Constants */
     private static final String WORKER_NAME = "RingBuffer-Padding-Worker";

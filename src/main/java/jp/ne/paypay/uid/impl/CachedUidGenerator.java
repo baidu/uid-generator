@@ -15,15 +15,15 @@
  */
 package jp.ne.paypay.uid.impl;
 
-import jp.ne.paypay.uid.buffer.RejectedTakeBufferHandler;
-import jp.ne.paypay.uid.exception.UidGenerateException;
 import jp.ne.paypay.uid.BitsAllocator;
 import jp.ne.paypay.uid.UidGenerator;
 import jp.ne.paypay.uid.buffer.BufferPaddingExecutor;
 import jp.ne.paypay.uid.buffer.RejectedPutBufferHandler;
+import jp.ne.paypay.uid.buffer.RejectedTakeBufferHandler;
 import jp.ne.paypay.uid.buffer.RingBuffer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jp.ne.paypay.uid.exception.UidGenerateException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.util.Assert;
 
@@ -48,7 +48,7 @@ import java.util.List;
  * @author yutianbao
  */
 public class CachedUidGenerator extends DefaultUidGenerator implements DisposableBean {
-    private static final Logger LOGGER = LoggerFactory.getLogger(CachedUidGenerator.class);
+    private static final Logger LOGGER = LogManager.getLogger(CachedUidGenerator.class);
     private static final int DEFAULT_BOOST_POWER = 3;
     private static final int PADDING_FACTOR = RingBuffer.DEFAULT_PADDING_PERCENT;
 

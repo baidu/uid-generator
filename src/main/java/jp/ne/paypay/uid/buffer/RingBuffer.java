@@ -16,8 +16,8 @@
 package jp.ne.paypay.uid.buffer;
 
 import jp.ne.paypay.uid.utils.PaddedAtomicLong;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.util.Assert;
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -36,7 +36,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author yutianbao
  */
 public class RingBuffer {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RingBuffer.class);
+    private static final Logger LOGGER = LogManager.getLogger(RingBuffer.class);
 
     /** Constants */
     private static final int START_POINT = -1;

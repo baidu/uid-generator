@@ -15,14 +15,14 @@
  */
 package jp.ne.paypay.uid.impl;
 
+import jp.ne.paypay.uid.BitsAllocator;
+import jp.ne.paypay.uid.UidGenerator;
 import jp.ne.paypay.uid.exception.UidGenerateException;
 import jp.ne.paypay.uid.utils.UidDateUtils;
 import jp.ne.paypay.uid.worker.WorkerIdAssigner;
-import jp.ne.paypay.uid.BitsAllocator;
-import jp.ne.paypay.uid.UidGenerator;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 
 import java.util.Date;
@@ -58,7 +58,7 @@ import java.util.concurrent.TimeUnit;
  * @author yutianbao
  */
 public class DefaultUidGenerator implements UidGenerator, InitializingBean {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultUidGenerator.class);
+    private static final Logger LOGGER = LogManager.getLogger(DefaultUidGenerator.class);
 
     /** Bits allocate */
     protected int timeBits = 28;

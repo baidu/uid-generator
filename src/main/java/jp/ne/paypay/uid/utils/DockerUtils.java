@@ -16,8 +16,8 @@
 package jp.ne.paypay.uid.utils;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * DockerUtils
@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * @author yutianbao
  */
 public final class DockerUtils {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DockerUtils.class);
+    private static final Logger LOGGER = LogManager.getLogger(DockerUtils.class);
 
     /** Environment param keys */
     private static final String ENV_KEY_HOST = "JPAAS_HOST";

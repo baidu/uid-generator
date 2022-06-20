@@ -20,11 +20,13 @@ import jp.ne.paypay.uid.utils.NetUtils;
 import jp.ne.paypay.uid.worker.dao.WorkerNodeDAO;
 import jp.ne.paypay.uid.worker.entity.WorkerNodeEntity;
 import org.apache.commons.lang3.RandomUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.transaction.annotation.Transactional;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Resource;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * Represents an implementation of {@link WorkerIdAssigner},
@@ -33,10 +35,16 @@ import javax.annotation.Resource;
  * @author yutianbao
  */
 public class DisposableWorkerIdAssigner implements WorkerIdAssigner {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DisposableWorkerIdAssigner.class);
+    private static final Logger LOGGER = LogManager.getLogger(DisposableWorkerIdAssigner.class);
 
     @Resource
     private WorkerNodeDAO workerNodeDAO;
+
+    private final Connection connection;
+
+    public DisposableWorkerIdAssigner(DataSource dataSource) throws SQLException {
+        connection = dataSource.getConnection();
+    }
 
     /**
      * Assign worker id base on database.<p>
@@ -45,17 +53,31 @@ public class DisposableWorkerIdAssigner implements WorkerIdAssigner {
      *
      * @return assigned worker id
      */
-    @Transactional
     @Override
     public long assignWorkerId() {
         // build worker node entity
         WorkerNodeEntity workerNodeEntity = buildWorkerNode();
 
-        // add worker node for new (ignore the same IP + PORT)
-        workerNodeDAO.addWorkerNode(workerNodeEntity);
-        LOGGER.info("Add worker node:" + workerNodeEntity);
+        try {
+            connection.setAutoCommit(false);
+
+            // add worker node for new (ignore the same IP + PORT)
+            workerNodeDAO.addWorkerNode(workerNodeEntity);
+            LOGGER.info("Add worker node:" + workerNodeEntity);
+
+            connection.commit();
+        }
+        catch (SQLException ex) {
+            try {
+                connection.rollback();
+            }
+            catch (SQLException e) {
+                System.out.println("==== rollback failed");
+            }
+        }
 
         return workerNodeEntity.getId();
+
     }
 
     /**
