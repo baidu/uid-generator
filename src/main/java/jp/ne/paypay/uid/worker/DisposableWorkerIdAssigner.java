@@ -72,7 +72,7 @@ public class DisposableWorkerIdAssigner implements WorkerIdAssigner {
                 connection.rollback();
             }
             catch (SQLException e) {
-                System.out.println("==== rollback failed");
+                LOGGER.error("Rollback failed.");
             }
         }
 

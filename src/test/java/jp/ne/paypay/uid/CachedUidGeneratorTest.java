@@ -113,7 +113,7 @@ public class CachedUidGeneratorTest {
         Assertions.assertTrue(StringUtils.isNotBlank(parsedInfo));
 
         if (VERBOSE) {
-//            System.out.println(Thread.currentThread().getName() + " No." + index + " >>> " + parsedInfo);
+            System.out.println(Thread.currentThread().getName() + " No." + index + " >>> " + parsedInfo);
         }
     }
 
@@ -121,7 +121,7 @@ public class CachedUidGeneratorTest {
      * Check UIDs are all unique
      */
     private void checkUniqueID(Set<Long> uidSet) throws IOException {
-//        System.out.println(uidSet.size());
+        System.out.println(uidSet.size());
         Assertions.assertEquals(SIZE, uidSet.size());
     }
 

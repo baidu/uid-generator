@@ -22,9 +22,6 @@ public class WorkerNodeDAOImpl implements WorkerNodeDAO {
 
     @Override
     public WorkerNodeEntity getWorkerNodeByHostPort(String host, String port) {
-        LOGGER.info("WorkerNodeDAOImpl -  getWorkerNodeByHostPort");
-        System.out.println("WorkerNodeDAOImpl -  getWorkerNodeByHostPort");
-
         if (connection == null) {
             return null;
         }

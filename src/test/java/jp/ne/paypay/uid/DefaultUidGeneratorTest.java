@@ -107,7 +107,7 @@ public class DefaultUidGeneratorTest {
         Assertions.assertTrue(StringUtils.isNotBlank(parsedInfo));
 
         if (VERBOSE) {
-//            System.out.println(Thread.currentThread().getName() + " No." + index + " >>> " + parsedInfo);
+            System.out.println(Thread.currentThread().getName() + " No." + index + " >>> " + parsedInfo);
         }
     }
 
