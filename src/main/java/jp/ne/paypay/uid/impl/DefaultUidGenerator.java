@@ -23,7 +23,6 @@ import jp.ne.paypay.uid.worker.WorkerIdAssigner;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.InitializingBean;
 
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -57,7 +56,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author yutianbao
  */
-public class DefaultUidGenerator implements UidGenerator, InitializingBean {
+public class DefaultUidGenerator implements UidGenerator {
     private static final Logger LOGGER = LogManager.getLogger(DefaultUidGenerator.class);
 
     /** Bits allocate */
@@ -80,8 +79,7 @@ public class DefaultUidGenerator implements UidGenerator, InitializingBean {
     /** Spring property */
     protected WorkerIdAssigner workerIdAssigner;
 
-    @Override
-    public void afterPropertiesSet() {
+    public void init() {
         // initialize bits allocator
         bitsAllocator = new BitsAllocator(timeBits, workerBits, seqBits);
 

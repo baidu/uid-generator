@@ -17,9 +17,9 @@ package jp.ne.paypay.uid.buffer;
 
 import jp.ne.paypay.uid.utils.NamingThreadFactory;
 import jp.ne.paypay.uid.utils.PaddedAtomicLong;
+import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.util.Assert;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -166,7 +166,7 @@ public class BufferPaddingExecutor {
      * Setters
      */
     public void setScheduleInterval(long scheduleInterval) {
-        Assert.isTrue(scheduleInterval > 0, "Schedule interval must positive!");
+        Validate.isTrue(scheduleInterval > 0, "Schedule interval must positive!");
         this.scheduleInterval = scheduleInterval;
     }
 

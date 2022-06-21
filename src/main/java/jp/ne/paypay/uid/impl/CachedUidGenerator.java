@@ -22,10 +22,9 @@ import jp.ne.paypay.uid.buffer.RejectedPutBufferHandler;
 import jp.ne.paypay.uid.buffer.RejectedTakeBufferHandler;
 import jp.ne.paypay.uid.buffer.RingBuffer;
 import jp.ne.paypay.uid.exception.UidGenerateException;
+import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +46,7 @@ import java.util.List;
  *
  * @author yutianbao
  */
-public class CachedUidGenerator extends DefaultUidGenerator implements DisposableBean {
+public class CachedUidGenerator extends DefaultUidGenerator {
     private static final Logger LOGGER = LogManager.getLogger(CachedUidGenerator.class);
     private static final int DEFAULT_BOOST_POWER = 3;
     private static final int PADDING_FACTOR = RingBuffer.DEFAULT_PADDING_PERCENT;
@@ -63,10 +62,9 @@ public class CachedUidGenerator extends DefaultUidGenerator implements Disposabl
     private RingBuffer ringBuffer;
     private BufferPaddingExecutor bufferPaddingExecutor;
 
-    @Override
-    public void afterPropertiesSet() {
+    public void init() {
         // initialize workerId & bitsAllocator
-        super.afterPropertiesSet();
+        super.init();
 
         // initialize RingBuffer & RingBufferPaddingExecutor
         this.initRingBuffer();
@@ -83,8 +81,7 @@ public class CachedUidGenerator extends DefaultUidGenerator implements Disposabl
         }
     }
 
-    @Override
-    public void destroy() throws Exception {
+    public void cleanup() throws Exception {
         bufferPaddingExecutor.shutdown();
     }
 
@@ -146,22 +143,22 @@ public class CachedUidGenerator extends DefaultUidGenerator implements Disposabl
      * Setters for spring property
      */
     public void setBoostPower(int boostPower) {
-        Assert.isTrue(boostPower > 0, "Boost power must be positive!");
+        Validate.isTrue(boostPower > 0, "Boost power must be positive!");
         this.boostPower = boostPower;
     }
 
     public void setRejectedPutBufferHandler(RejectedPutBufferHandler rejectedPutBufferHandler) {
-        Assert.notNull(rejectedPutBufferHandler, "RejectedPutBufferHandler can't be null!");
+        Validate.notNull(rejectedPutBufferHandler, "RejectedPutBufferHandler can't be null!");
         this.rejectedPutBufferHandler = rejectedPutBufferHandler;
     }
 
     public void setRejectedTakeBufferHandler(RejectedTakeBufferHandler rejectedTakeBufferHandler) {
-        Assert.notNull(rejectedTakeBufferHandler, "RejectedTakeBufferHandler can't be null!");
+        Validate.notNull(rejectedTakeBufferHandler, "RejectedTakeBufferHandler can't be null!");
         this.rejectedTakeBufferHandler = rejectedTakeBufferHandler;
     }
 
     public void setScheduleInterval(long scheduleInterval) {
-        Assert.isTrue(scheduleInterval > 0, "Schedule interval must positive!");
+        Validate.isTrue(scheduleInterval > 0, "Schedule interval must positive!");
         this.scheduleInterval = scheduleInterval;
     }
 

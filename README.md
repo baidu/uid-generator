@@ -119,12 +119,12 @@ Reset property of 'jdbc.url', 'jdbc.username' and 'jdbc.password' in [mysql.prop
 
 ### Step 3: Spring configuration
 #### DefaultUidGenerator
-There are two implements of UidGenerator: [DefaultUidGenerator](src/main/java/com/baidu/fsg/uid/impl/DefaultUidGenerator.java), [CachedUidGenerator](src/main/java/com/baidu/fsg/uid/impl/CachedUidGenerator.java).<br/>
+There are two implements of UidGenerator: [DefaultUidGenerator](src/main/java/jp/ne/paypay/uid/impl/DefaultUidGenerator.java), [CachedUidGenerator](src/main/java/jp/ne/paypay/uid/impl/CachedUidGenerator.java).<br/>
 For performance sensitive application, CachedUidGenerator is recommended.
 
 ```xml
 <!-- DefaultUidGenerator -->
-<bean id="defaultUidGenerator" class="com.baidu.fsg.uid.impl.DefaultUidGenerator" lazy-init="false">
+<bean id="defaultUidGenerator" class="jp.ne.paypay.uid.impl.DefaultUidGenerator" init-method="init" lazy-init="false">
     <property name="workerIdAssigner" ref="disposableWorkerIdAssigner"/>
 
     <!-- Specified bits & epoch as your demand. No specified the default value will be used -->
@@ -135,7 +135,7 @@ For performance sensitive application, CachedUidGenerator is recommended.
 </bean>
  
 <!-- Disposable WorkerIdAssigner based on Database -->
-<bean id="disposableWorkerIdAssigner" class="com.baidu.fsg.uid.worker.DisposableWorkerIdAssigner" />
+<bean id="disposableWorkerIdAssigner" class="jp.ne.paypay.uid.worker.DisposableWorkerIdAssigner" />
 
 ```
 
@@ -143,7 +143,7 @@ For performance sensitive application, CachedUidGenerator is recommended.
 Copy beans of CachedUidGenerator to 'test/resources/uid/cached-uid-spring.xml'.
 ```xml
 <!-- CachedUidGenerator -->
-<bean id="cachedUidGenerator" class="com.baidu.fsg.uid.impl.CachedUidGenerator">
+<bean id="cachedUidGenerator" class="jp.ne.paypay.uid.impl.CachedUidGenerator" init-method="init" destroy-method="cleanup">
     <property name="workerIdAssigner" ref="disposableWorkerIdAssigner" />
  
     <!-- The config below is option -->
@@ -174,35 +174,16 @@ Copy beans of CachedUidGenerator to 'test/resources/uid/cached-uid-spring.xml'.
 </bean>
  
 <!-- Disposable WorkerIdAssigner based on Database -->
-<bean id="disposableWorkerIdAssigner" class="com.baidu.fsg.uid.worker.DisposableWorkerIdAssigner" />
+<bean id="disposableWorkerIdAssigner" class="jp.ne.paypay.uid.worker.DisposableWorkerIdAssigner" />
  
 <!-- Mybatis config... -->
 ```
 
-#### Mybatis config
-[mybatis-spring.xml](src/test/resources/uid/mybatis-spring.xml) shows as below:
+#### DB config
+[uid-spring.xml](src/test/resources/uid/uid-spring.xml) shows as below:
 ```xml
 <!-- Spring annotation scan -->
-<context:component-scan base-package="com.baidu.fsg.uid" />
-
-<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-    <property name="dataSource" ref="dataSource" />
-    <property name="mapperLocations" value="classpath:/META-INF/mybatis/mapper/M_WORKER*.xml" />
-</bean>
-
-<!-- transaction -->
-<tx:annotation-driven transaction-manager="transactionManager" order="1" />
-
-<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-	<property name="dataSource" ref="dataSource" />
-</bean>
-
-<!-- Mybatis Mapper scan -->
-<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-	<property name="annotationClass" value="org.springframework.stereotype.Repository" />
-	<property name="basePackage" value="com.baidu.fsg.uid.worker.dao" />
-	<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
-</bean>
+<context:component-scan base-package="jp.ne.paypay" />
 
 <!-- datasource config -->
 <bean id="dataSource" parent="abstractDataSource">
@@ -230,14 +211,10 @@ Copy beans of CachedUidGenerator to 'test/resources/uid/cached-uid-spring.xml'.
 	<property name="removeAbandonedTimeout" value="${datasource.removeAbandonedTimeout}" />
 </bean>
 
-<bean id="batchSqlSession" class="org.mybatis.spring.SqlSessionTemplate">
-	<constructor-arg index="0" ref="sqlSessionFactory" />
-	<constructor-arg index="1" value="BATCH" />
-</bean>
 ```
 
 ### Step 4: Run UnitTest
-Run [CachedUidGeneratorTest](src/test/java/com/baidu/fsg/uid/CachedUidGeneratorTest.java), shows how to generate / parse UniqueID:
+Run [CachedUidGeneratorTest](src/test/java/jp/ne/paypay/uid/CachedUidGeneratorTest.java), shows how to generate / parse UniqueID:
 ```java
 @Resource
 private UidGenerator uidGenerator;

@@ -6,7 +6,7 @@
     <!-- UID generator -->
     <bean id="disposableWorkerIdAssigner" class="jp.ne.paypay.uid.worker.DisposableWorkerIdAssigner"/>
 
-    <bean id="defaultUidGenerator" class="jp.ne.paypay.uid.impl.DefaultUidGenerator" lazy-init="false">
+    <bean id="defaultUidGenerator" class="jp.ne.paypay.uid.impl.DefaultUidGenerator" init-method="init" lazy-init="false">
         <property name="workerIdAssigner" ref="disposableWorkerIdAssigner"/>
 
         <!-- Specified bits & epoch as your demand. No specified the default value will be used -->

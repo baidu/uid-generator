@@ -16,9 +16,9 @@
 package jp.ne.paypay.uid.buffer;
 
 import jp.ne.paypay.uid.utils.PaddedAtomicLong;
+import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.util.Assert;
 
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -85,9 +85,9 @@ public class RingBuffer {
      */
     public RingBuffer(int bufferSize, int paddingFactor) {
         // check buffer size is positive & a power of 2; padding factor in (0, 100)
-        Assert.isTrue(bufferSize > 0L, "RingBuffer size must be positive");
-        Assert.isTrue(Integer.bitCount(bufferSize) == 1, "RingBuffer size must be a power of 2");
-        Assert.isTrue(paddingFactor > 0 && paddingFactor < 100, "RingBuffer size must be positive");
+        Validate.isTrue(bufferSize > 0L, "RingBuffer size must be positive");
+        Validate.isTrue(Integer.bitCount(bufferSize) == 1, "RingBuffer size must be a power of 2");
+        Validate.isTrue(paddingFactor > 0 && paddingFactor < 100, "RingBuffer size must be positive");
 
         this.bufferSize = bufferSize;
         this.indexMask = bufferSize - 1;
@@ -152,7 +152,7 @@ public class RingBuffer {
         long nextCursor = cursor.updateAndGet(old -> old == tail.get() ? old : old + 1);
 
         // check for safety consideration, it never occurs
-        Assert.isTrue(nextCursor >= currentCursor, "Cursor can't move back");
+        Validate.isTrue(nextCursor >= currentCursor, "Cursor can't move back");
 
         // trigger padding in an async-mode if reach the threshold
         long currentTail = tail.get();
@@ -169,7 +169,7 @@ public class RingBuffer {
 
         // 1. check next slot flag is CAN_TAKE_FLAG
         int nextCursorIndex = calSlotIndex(nextCursor);
-        Assert.isTrue(flags[nextCursorIndex].get() == CAN_TAKE_FLAG, "Cursor not in can take status");
+        Validate.isTrue(flags[nextCursorIndex].get() == CAN_TAKE_FLAG, "Cursor not in can take status");
 
         // 2. get UID from next slot
         // 3. set next slot flag as CAN_PUT_FLAG.

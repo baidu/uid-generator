@@ -104,13 +104,13 @@ PRIMARY KEY(ID)
 修改[mysql.properties](src/test/resources/uid/mysql.properties)配置中, jdbc.url, jdbc.username和jdbc.password, 确保库地址, 名称, 端口号, 用户名和密码正确.
 
 ### 步骤3: 修改Spring配置
-提供了两种生成器: [DefaultUidGenerator](src/main/java/com/baidu/fsg/uid/impl/DefaultUidGenerator.java)、[CachedUidGenerator](src/main/java/com/baidu/fsg/uid/impl/CachedUidGenerator.java)。如对UID生成性能有要求, 请使用CachedUidGenerator<br/>
+提供了两种生成器: [DefaultUidGenerator](src/main/java/jp/ne/paypay/uid/impl/DefaultUidGenerator.java)、[CachedUidGenerator](src/main/java/jp/ne/paypay/uid/impl/CachedUidGenerator.java)。如对UID生成性能有要求, 请使用CachedUidGenerator<br/>
 对应Spring配置分别为: [default-uid-spring.xml](src/test/resources/uid/default-uid-spring.xml)、[cached-uid-spring.xml](src/test/resources/uid/cached-uid-spring.xml)
 
 #### DefaultUidGenerator配置
 ```xml
 <!-- DefaultUidGenerator -->
-<bean id="defaultUidGenerator" class="com.baidu.fsg.uid.impl.DefaultUidGenerator" lazy-init="false">
+<bean id="defaultUidGenerator" class="jp.ne.paypay.uid.impl.DefaultUidGenerator" init-method="init" lazy-init="false">
     <property name="workerIdAssigner" ref="disposableWorkerIdAssigner"/>
 
     <!-- Specified bits & epoch as your demand. No specified the default value will be used -->
@@ -121,14 +121,14 @@ PRIMARY KEY(ID)
 </bean>
  
 <!-- 用完即弃的WorkerIdAssigner，依赖DB操作 -->
-<bean id="disposableWorkerIdAssigner" class="com.baidu.fsg.uid.worker.DisposableWorkerIdAssigner" />
+<bean id="disposableWorkerIdAssigner" class="jp.ne.paypay.uid.worker.DisposableWorkerIdAssigner" />
 
 ```
 
 #### CachedUidGenerator配置
 ```xml
 <!-- CachedUidGenerator -->
-<bean id="cachedUidGenerator" class="com.baidu.fsg.uid.impl.CachedUidGenerator">
+<bean id="cachedUidGenerator" class="jp.ne.paypay.uid.impl.CachedUidGenerator" init-method="init" destroy-method="cleanup">
     <property name="workerIdAssigner" ref="disposableWorkerIdAssigner" />
  
     <!-- 以下为可选配置, 如未指定将采用默认值 -->
@@ -162,35 +162,16 @@ PRIMARY KEY(ID)
 </bean>
  
 <!-- 用完即弃的WorkerIdAssigner, 依赖DB操作 -->
-<bean id="disposableWorkerIdAssigner" class="com.baidu.fsg.uid.worker.DisposableWorkerIdAssigner" />
+<bean id="disposableWorkerIdAssigner" class="jp.ne.paypay.uid.worker.DisposableWorkerIdAssigner" />
  
 ```
 
 #### Mybatis配置
-[mybatis-spring.xml](src/test/resources/uid/mybatis-spring.xml)配置说明如下:
+[uid-spring.xml](src/test/resources/uid/uid-spring.xml)配置说明如下:
 
 ```xml
 <!-- Spring annotation扫描 -->
-<context:component-scan base-package="com.baidu.fsg.uid" />
-
-<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-    <property name="dataSource" ref="dataSource" />
-    <property name="mapperLocations" value="classpath:/META-INF/mybatis/mapper/M_WORKER*.xml" />
-</bean>
-
-<!-- 事务相关配置 -->
-<tx:annotation-driven transaction-manager="transactionManager" order="1" />
-
-<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-	<property name="dataSource" ref="dataSource" />
-</bean>
-
-<!-- Mybatis Mapper扫描 -->
-<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-	<property name="annotationClass" value="org.springframework.stereotype.Repository" />
-	<property name="basePackage" value="com.baidu.fsg.uid.worker.dao" />
-	<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
-</bean>
+<context:component-scan base-package="jp.ne.paypay" />
 
 <!-- 数据源配置 -->
 <bean id="dataSource" parent="abstractDataSource">
@@ -218,14 +199,10 @@ PRIMARY KEY(ID)
 	<property name="removeAbandonedTimeout" value="${datasource.removeAbandonedTimeout}" />
 </bean>
 
-<bean id="batchSqlSession" class="org.mybatis.spring.SqlSessionTemplate">
-	<constructor-arg index="0" ref="sqlSessionFactory" />
-	<constructor-arg index="1" value="BATCH" />
-</bean>
 ```
 
 ### 步骤4: 运行示例单测
-运行单测[CachedUidGeneratorTest](src/test/java/com/baidu/fsg/uid/CachedUidGeneratorTest.java), 展示UID生成、解析等功能
+运行单测[CachedUidGeneratorTest](src/test/java/jp/ne/paypay/uid/CachedUidGeneratorTest.java), 展示UID生成、解析等功能
 ```java
 @Resource
 private UidGenerator uidGenerator;

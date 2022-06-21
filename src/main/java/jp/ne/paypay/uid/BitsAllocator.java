@@ -15,9 +15,9 @@
  */
 package jp.ne.paypay.uid;
 
+import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.springframework.util.Assert;
 
 /**
  * Allocate 64 bits for the UID(long)<br>
@@ -59,7 +59,7 @@ public class BitsAllocator {
     public BitsAllocator(int timestampBits, int workerIdBits, int sequenceBits) {
         // make sure allocated 64 bits
         int allocateTotalBits = SIGN_BITS + timestampBits + workerIdBits + sequenceBits;
-        Assert.isTrue(allocateTotalBits == TOTAL_BITS, "allocate not enough 64 bits");
+        Validate.isTrue(allocateTotalBits == TOTAL_BITS, "allocate not enough 64 bits");
 
         // initialize bits
         this.timestampBits = timestampBits;

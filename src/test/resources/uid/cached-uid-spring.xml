@@ -6,7 +6,7 @@
 	<!-- UID generator -->
 	<bean id="disposableWorkerIdAssigner" class="jp.ne.paypay.uid.worker.DisposableWorkerIdAssigner" />
 
-	<bean id="cachedUidGenerator" class="jp.ne.paypay.uid.impl.CachedUidGenerator">
+	<bean id="cachedUidGenerator" class="jp.ne.paypay.uid.impl.CachedUidGenerator" init-method="init" destroy-method="cleanup">
 		<property name="workerIdAssigner" ref="disposableWorkerIdAssigner" />
 
 		<!-- 以下为可选配置, 如未指定将采用默认值 -->

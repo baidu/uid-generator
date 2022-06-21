@@ -15,7 +15,7 @@
  */
 package jp.ne.paypay.uid.utils;
 
-import org.springframework.util.Assert;
+import org.apache.commons.lang3.Validate;
 
 /**
  * EnumUtils provides the operations for {@link ValuedEnum} such as Parse, value of...
@@ -35,7 +35,7 @@ public final class EnumUtils {
      * @return
      */
     public static <T extends ValuedEnum<V>, V> T parse(Class<T> clz, V value) {
-        Assert.notNull(clz, "clz can not be null");
+        Validate.notNull(clz, "clz can not be null");
         if (value == null) {
             return null;
         }
